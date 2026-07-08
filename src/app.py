@@ -1,9 +1,8 @@
-from importer.excel_importer import ExcelImporter
+from importer.rewe_importer import ReweImporter
 
 
 def main():
-
-    importer = ExcelImporter()
+    importer = ReweImporter()
 
     regionen = importer.get_regions()
 
@@ -11,8 +10,7 @@ def main():
     print("KatalogFactory")
     print("=" * 50)
 
-    print()
-    print("Verfügbare Regionen")
+    print("\nVerfügbare Regionen")
     print("-" * 30)
 
     for nummer, region in enumerate(regionen, start=1):
@@ -20,7 +18,17 @@ def main():
 
     print()
 
-    auswahl = int(input("Region auswählen: "))
+    while True:
+        try:
+            auswahl = int(input("Region auswählen: "))
+
+            if 1 <= auswahl <= len(regionen):
+                break
+
+            print("Bitte eine gültige Nummer eingeben.")
+
+        except ValueError:
+            print("Bitte eine Zahl eingeben.")
 
     region = regionen[auswahl - 1]
 
@@ -39,7 +47,9 @@ def main():
 
     for _, zeile in artikel.head(10).iterrows():
         print(
-            f"{zeile['Artikel']} | {zeile['Zusatztext']} | {zeile['Mengentext']}"
+            f"{zeile['Artikel']} | "
+            f"{zeile['Zusatztext']} | "
+            f"{zeile['Mengentext']}"
         )
 
 

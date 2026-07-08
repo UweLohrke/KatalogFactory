@@ -1,8 +1,9 @@
 from pathlib import Path
+
 import pandas as pd
 
 
-class ExcelImporter:
+class ReweImporter:
 
     def __init__(self):
         self.project_path = Path(__file__).resolve().parents[2]
@@ -21,6 +22,7 @@ class ExcelImporter:
     def load_excel(self):
         excel_file = self.find_excel_file()
         dataframe = pd.read_excel(excel_file)
+
         return excel_file, dataframe
 
     def get_regions(self):
@@ -38,4 +40,10 @@ class ExcelImporter:
         if region not in dataframe.columns:
             raise ValueError(f"Region '{region}' nicht gefunden.")
 
-        return dataframe[dataframe[region] == "X"]
+        # Ausgelistete Artikel entfernen
+        dataframe = dataframe[dataframe["Status"] != "#NV"]
+
+        # Nur gelistete Artikel der gewählten Region
+        artikel = dataframe[dataframe[region] == "X"]
+
+        return artikel
