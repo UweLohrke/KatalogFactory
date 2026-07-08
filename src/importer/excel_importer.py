@@ -26,10 +26,16 @@ class ExcelImporter:
     def get_regions(self):
         _, dataframe = self.load_excel()
 
-        regions = []
+        return [
+            column
+            for column in dataframe.columns
+            if isinstance(column, str) and column.startswith("REWE")
+        ]
 
-        for column in dataframe.columns:
-            if isinstance(column, str) and column.startswith("REWE"):
-                regions.append(column)
+    def get_articles_for_region(self, region):
+        _, dataframe = self.load_excel()
 
-        return regions
+        if region not in dataframe.columns:
+            raise ValueError(f"Region '{region}' nicht gefunden.")
+
+        return dataframe[dataframe[region] == "X"]
