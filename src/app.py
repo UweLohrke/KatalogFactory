@@ -1,13 +1,17 @@
-from pathlib import Path
+from importer.excel_importer import ExcelImporter
 
-PROJECT = Path(__file__).resolve().parent.parent
 
-print("=" * 50)
-print("KatalogFactory")
-print("=" * 50)
+def main():
+    print("=" * 50)
+    print("KatalogFactory")
+    print("=" * 50)
 
-for folder in ["excel", "bilder", "kataloge", "logs"]:
-    status = "OK" if (PROJECT / folder).exists() else "FEHLT"
-    print(f"{folder:<12} {status}")
+    importer = ExcelImporter()
 
-print("\nProjekt erfolgreich gestartet.")
+    excel_file = importer.find_excel_file()
+
+    print(f"Excel-Datei gefunden:\n{excel_file}")
+
+
+if __name__ == "__main__":
+    main()
