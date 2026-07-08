@@ -17,3 +17,19 @@ class ExcelImporter:
             )
 
         return files[0]
+
+    def load_excel(self):
+        excel_file = self.find_excel_file()
+        dataframe = pd.read_excel(excel_file)
+        return excel_file, dataframe
+
+    def get_regions(self):
+        _, dataframe = self.load_excel()
+
+        regions = []
+
+        for column in dataframe.columns:
+            if isinstance(column, str) and column.startswith("REWE"):
+                regions.append(column)
+
+        return regions
