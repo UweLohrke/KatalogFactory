@@ -3,15 +3,11 @@ from collections import defaultdict
 
 class CatalogBuilder:
 
-    def group_by_manufacturer(self, articles):
+    def build(self, dataframe):
         katalog = defaultdict(list)
 
-        for article in articles:
-            katalog[article.hersteller].append(article)
-
-        for hersteller in katalog:
-            katalog[hersteller].sort(
-                key=lambda artikel: artikel.bezeichnung
-            )
+        for _, zeile in dataframe.iterrows():
+            hersteller = str(zeile["Zusatztext"]).strip()
+            katalog[hersteller].append(zeile)
 
         return dict(sorted(katalog.items()))

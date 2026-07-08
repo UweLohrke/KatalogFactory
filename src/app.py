@@ -1,14 +1,20 @@
 from importer.rewe_importer import ReweImporter
+from catalog.catalog_builder import CatalogBuilder
+from pdf.pdf_generator import PDFGenerator
 
 
 def main():
-    importer = ReweImporter()
 
-    regionen = importer.get_regions()
-
-    print("=" * 50)
+    print("=" * 60)
     print("KatalogFactory")
-    print("=" * 50)
+    print("=" * 60)
+
+    importer = ReweImporter()
+    builder = CatalogBuilder()
+    pdf_generator = PDFGenerator()
+
+    # Regionen ermitteln
+    regionen = importer.get_regions()
 
     print("\nVerfügbare Regionen")
     print("-" * 30)
@@ -16,41 +22,39 @@ def main():
     for nummer, region in enumerate(regionen, start=1):
         print(f"{nummer}. {region}")
 
-    print()
-
+    # Region auswählen
     while True:
+
         try:
-            auswahl = int(input("Region auswählen: "))
+            auswahl = int(input("\nRegion auswählen: "))
 
             if 1 <= auswahl <= len(regionen):
                 break
 
-            print("Bitte eine gültige Nummer eingeben.")
+            print("Ungültige Auswahl.")
 
         except ValueError:
             print("Bitte eine Zahl eingeben.")
 
     region = regionen[auswahl - 1]
 
-    artikel = importer.get_articles_for_region(region)
+    print(f"\nRegion: {region}")
 
-    print()
-    print("=" * 50)
-    print(region)
-    print("=" * 50)
+    # Artikel laden
+    dataframe = importer.get_articles_for_region(region)
 
-    print(f"Gelistete Artikel: {len(artikel)}")
+    print(f"Gelistete Artikel: {len(dataframe)}")
 
-    print()
-    print("Erste 10 Artikel")
-    print("-" * 50)
+    # Katalog erzeugen
+    katalog = builder.build(dataframe)
 
-    for _, zeile in artikel.head(10).iterrows():
-        print(
-            f"{zeile['Artikel']} | "
-            f"{zeile['Zusatztext']} | "
-            f"{zeile['Mengentext']}"
-        )
+    print("\nPDF wird erstellt ...")
+
+    pdf_datei = pdf_generator.create_pdf(region)
+
+    print("\nFertig.")
+
+    print(f"\nPDF gespeichert unter:\n{pdf_datei}")
 
 
 if __name__ == "__main__":

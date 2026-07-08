@@ -1,0 +1,19 @@
+from decimal import Decimal
+
+# Statuswerte aus der REWE-Datei
+
+STATUS_LIEFERBAR = 0
+STATUS_AKTION = 2
+STATUS_SAISON = 3
+STATUS_DISPLAY = 5
+
+GUELTIGE_STATUS = {
+    STATUS_LIEFERBAR,
+    STATUS_AKTION,
+    STATUS_SAISON,
+    STATUS_DISPLAY,
+}
+
+# Geldwerte
+
+ZERO_DECIMAL = Decimal("0.00")
