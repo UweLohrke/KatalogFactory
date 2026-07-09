@@ -5,6 +5,8 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 from reportlab.pdfgen import canvas
 
+from pdf.article_row import ArticleRow
+
 
 class PDFGenerator:
 
@@ -17,40 +19,60 @@ class PDFGenerator:
 
         pdf_path = output_folder / f"{region.replace(' ', '_')}.pdf"
 
-        pdf = canvas.Canvas(str(pdf_path), pagesize=A4)
+        pdf = canvas.Canvas(
+            str(pdf_path),
+            pagesize=A4,
+        )
 
         page_width, page_height = A4
 
-        self.draw_header(pdf, project_path, page_width, page_height, region)
-        self.draw_catalog(pdf, katalog, page_width, page_height)
+        self.draw_header(
+            pdf,
+            project_path,
+            page_width,
+            page_height,
+            region,
+        )
+
+        self.draw_catalog(
+            pdf,
+            katalog,
+            page_width,
+            page_height,
+        )
 
         pdf.save()
 
         return pdf_path
 
-    # ---------------------------------------------------------
-    # Kopf
-    # ---------------------------------------------------------
 
-    def draw_header(self, pdf, project_path, page_width, page_height, region):
+    def draw_header(
+        self,
+        pdf,
+        project_path,
+        page_width,
+        page_height,
+        region,
+    ):
 
         logo = project_path / "assets" / "logo.png"
 
         if logo.exists():
-            try:
-                pdf.drawImage(
-                    str(logo),
-                    2 * cm,
-                    page_height - 3.3 * cm,
-                    width=2.5 * cm,
-                    height=2.5 * cm,
-                    preserveAspectRatio=True,
-                    mask="auto",
-                )
-            except Exception:
-                pass
 
-        pdf.setFont("Helvetica-Bold", 18)
+            pdf.drawImage(
+                str(logo),
+                2 * cm,
+                page_height - 3.3 * cm,
+                width=2.5 * cm,
+                height=2.5 * cm,
+                preserveAspectRatio=True,
+                mask="auto",
+            )
+
+        pdf.setFont(
+            "Helvetica-Bold",
+            18,
+        )
 
         pdf.drawString(
             5 * cm,
@@ -58,7 +80,10 @@ class PDFGenerator:
             "Rhein-Main-Bio GmbH",
         )
 
-        pdf.setFont("Helvetica", 12)
+        pdf.setFont(
+            "Helvetica",
+            12,
+        )
 
         pdf.drawString(
             5 * cm,
@@ -66,11 +91,14 @@ class PDFGenerator:
             region,
         )
 
-        pdf.setFont("Helvetica", 10)
+        pdf.setFont(
+            "Helvetica",
+            10,
+        )
 
         pdf.drawRightString(
             page_width - 2 * cm,
-            page_height - 2.0 * cm,
+            page_height - 2 * cm,
             datetime.now().strftime("%d.%m.%Y"),
         )
 
@@ -86,14 +114,13 @@ class PDFGenerator:
             page_width - 2 * cm,
             page_height - 3.6 * cm,
         )
-
-    # ---------------------------------------------------------
-    # Musterartikel
-    # ---------------------------------------------------------
-
-    def draw_catalog(self, pdf, katalog, page_width, page_height):
-
-        from pdf.article_row import ArticleRow
+    def draw_catalog(
+        self,
+        pdf,
+        katalog,
+        page_width,
+        page_height,
+    ):
 
         article_row = ArticleRow()
 
@@ -101,8 +128,33 @@ class PDFGenerator:
 
         for hersteller, artikel_liste in katalog.items():
 
-            pdf.setFont("Helvetica-Bold", 16)
-            pdf.drawString(2 * cm, y, hersteller)
+            # Prüfen, ob noch Platz auf der Seite ist
+            if y < 5 * cm:
+
+                pdf.showPage()
+
+                self.draw_header(
+                    pdf,
+                    Path(__file__).resolve().parents[2],
+                    page_width,
+                    page_height,
+                    "",
+                )
+
+                y = page_height - 5.2 * cm
+
+            # Herstellerüberschrift
+
+            pdf.setFont(
+                "Helvetica-Bold",
+                16,
+            )
+
+            pdf.drawString(
+                2 * cm,
+                y,
+                hersteller,
+            )
 
             pdf.line(
                 2 * cm,
@@ -113,14 +165,37 @@ class PDFGenerator:
 
             y -= 1 * cm
 
-            if artikel_liste:
+            # Alle Artikel des Herstellers
+
+            for artikel in artikel_liste:
 
                 article_row.draw(
                     pdf,
-                    artikel_liste[0],
+                    artikel,
                     2 * cm,
                     y,
                     page_width,
                 )
 
-            break
+                y -= 3.6 * cm
+
+                # Seitenumbruch innerhalb eines Herstellers
+
+                if y < 5 * cm:
+
+                    pdf.showPage()
+
+                    self.draw_header(
+                        pdf,
+                        Path(__file__).resolve().parents[2],
+                        page_width,
+                        page_height,
+                        "",
+                    )
+
+                    y = page_height - 5.2 * cm
+
+            # Abstand zum nächsten Hersteller
+
+            y -= 0.8 * cm
+            
