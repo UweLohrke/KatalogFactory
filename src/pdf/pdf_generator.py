@@ -8,7 +8,7 @@ from reportlab.pdfgen import canvas
 
 class PDFGenerator:
 
-    def create_pdf(self, region: str):
+    def create_pdf(self, region: str, katalog):
 
         project_path = Path(__file__).resolve().parents[2]
 
@@ -22,7 +22,7 @@ class PDFGenerator:
         page_width, page_height = A4
 
         self.draw_header(pdf, project_path, page_width, page_height, region)
-        self.draw_sample_article(pdf, page_width, page_height)
+        self.draw_catalog(pdf, katalog, page_width, page_height)
 
         pdf.save()
 
@@ -91,98 +91,36 @@ class PDFGenerator:
     # Musterartikel
     # ---------------------------------------------------------
 
-    def draw_sample_article(self, pdf, page_width, page_height):
+    def draw_catalog(self, pdf, katalog, page_width, page_height):
+
+        from pdf.article_row import ArticleRow
+
+        article_row = ArticleRow()
 
         y = page_height - 5.2 * cm
 
-        pdf.setFont("Helvetica-Bold", 16)
-        pdf.drawString(2 * cm, y, "BAUCK")
+        for hersteller, artikel_liste in katalog.items():
 
-        pdf.line(
-            2 * cm,
-            y - 0.2 * cm,
-            page_width - 2 * cm,
-            y - 0.2 * cm,
-        )
+            pdf.setFont("Helvetica-Bold", 16)
+            pdf.drawString(2 * cm, y, hersteller)
 
-        row_top = y - 1 * cm
+            pdf.line(
+                2 * cm,
+                y - 0.2 * cm,
+                page_width - 2 * cm,
+                y - 0.2 * cm,
+            )
 
-        # Bild
+            y -= 1 * cm
 
-        pdf.rect(
-            2 * cm,
-            row_top - 3 * cm,
-            3 * cm,
-            3 * cm,
-        )
+            if artikel_liste:
 
-        pdf.setFont("Helvetica", 9)
+                article_row.draw(
+                    pdf,
+                    artikel_liste[0],
+                    2 * cm,
+                    y,
+                    page_width,
+                )
 
-        pdf.drawCentredString(
-            3.5 * cm,
-            row_top - 1.5 * cm,
-            "Produktbild",
-        )
-
-        # Artikel
-
-        pdf.setFont("Helvetica-Bold", 13)
-
-        pdf.drawString(
-            5.5 * cm,
-            row_top - 0.4 * cm,
-            "100% DINKEL CRUNCHY",
-        )
-
-        pdf.setFont("Helvetica", 11)
-
-        pdf.drawString(
-            5.5 * cm,
-            row_top - 1.1 * cm,
-            "BOHLSENER MÜHLE",
-        )
-
-        pdf.drawString(
-            5.5 * cm,
-            row_top - 1.8 * cm,
-            "400 G PK",
-        )
-
-        # Preise
-
-        pdf.setFont("Helvetica-Bold", 11)
-
-        pdf.drawRightString(
-            page_width - 6 * cm,
-            row_top - 0.4 * cm,
-            "LP: 3,49 €",
-        )
-
-        pdf.drawRightString(
-            page_width - 6 * cm,
-            row_top - 1.2 * cm,
-            "UVP: 4,29 €",
-        )
-
-        # Barcode
-
-        pdf.rect(
-            page_width - 5 * cm,
-            row_top - 2.6 * cm,
-            3 * cm,
-            2.2 * cm,
-        )
-
-        pdf.setFont("Helvetica", 8)
-
-        pdf.drawCentredString(
-            page_width - 3.5 * cm,
-            row_top - 1.5 * cm,
-            "Barcode",
-        )
-
-        pdf.drawCentredString(
-            page_width - 3.5 * cm,
-            row_top - 2.9 * cm,
-            "4012345678901",
-        )
+            break

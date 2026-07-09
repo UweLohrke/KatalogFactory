@@ -13,7 +13,7 @@ def main():
     builder = CatalogBuilder()
     pdf_generator = PDFGenerator()
 
-    # Regionen ermitteln
+    # Regionen laden
     regionen = importer.get_regions()
 
     print("\nVerfügbare Regionen")
@@ -45,12 +45,16 @@ def main():
 
     print(f"Gelistete Artikel: {len(dataframe)}")
 
-    # Katalog erzeugen
+    # Nach Herstellern gruppieren
     katalog = builder.build(dataframe)
 
     print("\nPDF wird erstellt ...")
 
-    pdf_datei = pdf_generator.create_pdf(region)
+    # PDF erzeugen
+    pdf_datei = pdf_generator.create_pdf(
+        region=region,
+        katalog=katalog,
+    )
 
     print("\nFertig.")
 
