@@ -15,7 +15,7 @@ bereitet die spätere Einbindung echter Produktbilder vor.
 
 from reportlab.lib.units import cm
 from pdf.image_loader import ImageLoader
-
+from pdf.barcode_generator import BarcodeGenerator
 class ArticleRow:
 
     # Höhe einer kompletten Artikelzeile
@@ -117,28 +117,16 @@ class ArticleRow:
         )
 
         # --------------------------------------------------
-        # Barcode (Platzhalter)
+        # Barcode
         # --------------------------------------------------
 
-        barcode_width = 2.4 * cm
-        barcode_height = 1.8 * cm
+        barcode = BarcodeGenerator()
 
         barcode_x = page_width - 4.6 * cm
 
-        pdf.rect(
+        barcode.draw(
+            pdf,
+            artikel["EH GTIN"],
             barcode_x,
-            y - barcode_height,
-            barcode_width,
-            barcode_height,
-        )
-
-        pdf.setFont(
-            "Helvetica",
-            7,
-        )
-
-        pdf.drawCentredString(
-            barcode_x + barcode_width / 2,
-            y - barcode_height / 2,
-            "Barcode",
+            y - 1.9 * cm,
         )
