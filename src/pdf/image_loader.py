@@ -5,13 +5,15 @@ Datei:
 image_loader.py
 
 Version:
-0.6.1
+0.7.1
 
 Beschreibung:
-Lädt Produktbilder anhand der EH-GTIN.
+Lädt Produktbilder anhand der EH-GTIN und liefert
+Informationen über vorhandene Bilder.
 """
 
 from pathlib import Path
+from PIL import Image
 
 
 class ImageLoader:
@@ -20,6 +22,10 @@ class ImageLoader:
 
         project_path = Path(__file__).resolve().parents[2]
         self.image_folder = project_path / "bilder"
+
+    # --------------------------------------------------
+    # Bildpfad ermitteln
+    # --------------------------------------------------
 
     def get_image(self, artikel):
 
@@ -31,3 +37,26 @@ class ImageLoader:
             return image_path
 
         return None
+
+    # --------------------------------------------------
+    # Bildgröße ermitteln
+    # --------------------------------------------------
+
+    def get_image_size(self, artikel):
+
+        image_path = self.get_image(artikel)
+
+        if image_path is None:
+            return None
+
+        with Image.open(image_path) as image:
+
+            return image.size
+
+    # --------------------------------------------------
+    # Prüfen, ob Bild vorhanden
+    # --------------------------------------------------
+
+    def has_image(self, artikel):
+
+        return self.get_image(artikel) is not None
