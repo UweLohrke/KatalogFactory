@@ -5,12 +5,12 @@ Datei:
 article_row.py
 
 Version:
-0.5.0
+0.5.3
 
 Beschreibung:
-Zeichnet eine einzelne Artikelzeile in den PDF-Katalog.
-In Version 0.5.0 werden zunächst Platzhalter für Produktbild
-und Barcode verwendet.
+Zeichnet eine kompakte Artikelzeile für den PDF-Katalog.
+Die Version 0.5.3 reduziert den Platzbedarf deutlich und
+bereitet die spätere Einbindung echter Produktbilder vor.
 """
 
 from reportlab.lib.units import cm
@@ -18,92 +18,112 @@ from reportlab.lib.units import cm
 
 class ArticleRow:
 
+    # Höhe einer kompletten Artikelzeile
+    ROW_HEIGHT = 2.7 * cm
+
     def draw(self, pdf, artikel, x, y, page_width):
 
         # --------------------------------------------------
         # Produktbild (Platzhalter)
         # --------------------------------------------------
 
+        image_size = 2.2 * cm
+
         pdf.rect(
             x,
-            y - 3 * cm,
-            3 * cm,
-            3 * cm
+            y - image_size,
+            image_size,
+            image_size,
         )
 
-        pdf.setFont("Helvetica", 8)
+        pdf.setFont("Helvetica", 7)
 
         pdf.drawCentredString(
-            x + 1.5 * cm,
-            y - 1.5 * cm,
-            "Bild"
+            x + image_size / 2,
+            y - image_size / 2,
+            "Bild",
         )
 
         # --------------------------------------------------
         # Artikelinformationen
         # --------------------------------------------------
 
-        text_x = x + 3.6 * cm
+        text_x = x + image_size + 0.4 * cm
 
-        pdf.setFont("Helvetica-Bold", 12)
-
-        pdf.drawString(
-            text_x,
-            y - 0.4 * cm,
-            str(artikel["Artikel"])
-        )
-
-        pdf.setFont("Helvetica", 10)
-
-        pdf.drawString(
-            text_x,
-            y - 1.0 * cm,
-            str(artikel["Mengentext"])
+        pdf.setFont(
+            "Helvetica-Bold",
+            11,
         )
 
         pdf.drawString(
             text_x,
-            y - 1.6 * cm,
-            f"EH GTIN: {artikel['EH GTIN']}"
+            y - 0.3 * cm,
+            str(artikel["Artikel"]),
+        )
+
+        pdf.setFont(
+            "Helvetica",
+            9,
+        )
+
+        pdf.drawString(
+            text_x,
+            y - 0.9 * cm,
+            str(artikel["Mengentext"]),
+        )
+
+        pdf.drawString(
+            text_x,
+            y - 1.5 * cm,
+            f"EH GTIN: {artikel['EH GTIN']}",
         )
 
         # --------------------------------------------------
         # Preise
         # --------------------------------------------------
 
-        preis_x = page_width - 6 * cm
+        price_x = page_width - 5.8 * cm
 
-        pdf.setFont("Helvetica-Bold", 10)
-
-        pdf.drawRightString(
-            preis_x,
-            y - 0.4 * cm,
-            f"LP: {artikel['Listenpreis (EUR)']:.2f} €"
+        pdf.setFont(
+            "Helvetica-Bold",
+            9,
         )
 
         pdf.drawRightString(
-            preis_x,
-            y - 1.1 * cm,
-            f"UVP: {artikel['UVP']:.2f} €"
+            price_x,
+            y - 0.3 * cm,
+            f"LP: {artikel['Listenpreis (EUR)']:.2f} €",
+        )
+
+        pdf.drawRightString(
+            price_x,
+            y - 0.9 * cm,
+            f"UVP: {artikel['UVP']:.2f} €",
         )
 
         # --------------------------------------------------
         # Barcode (Platzhalter)
         # --------------------------------------------------
 
-        barcode_x = page_width - 5 * cm
+        barcode_width = 2.4 * cm
+        barcode_height = 1.8 * cm
+
+        barcode_x = page_width - 4.6 * cm
 
         pdf.rect(
             barcode_x,
-            y - 2.8 * cm,
-            3 * cm,
-            2.2 * cm
+            y - barcode_height,
+            barcode_width,
+            barcode_height,
         )
 
-        pdf.setFont("Helvetica", 8)
+        pdf.setFont(
+            "Helvetica",
+            7,
+        )
 
         pdf.drawCentredString(
-            barcode_x + 1.5 * cm,
-            y - 1.7 * cm,
-            "Barcode"
+            barcode_x + barcode_width / 2,
+            y - barcode_height / 2,
+            "Barcode",
         )

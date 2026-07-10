@@ -182,7 +182,7 @@ class PDFGenerator:
                     page_width,
                 )
 
-                y -= 3.6 * cm
+                y -= article_row.ROW_HEIGHT
 
                 # Seitenumbruch innerhalb eines Herstellers
 
