@@ -5,11 +5,11 @@ Datei:
 main_window.py
 
 Version:
-0.8.3
+0.8.4
 
 Beschreibung:
 Hauptfenster der KatalogFactory.
-Verwendet eigene GUI-Widgets.
+Zusammenführung der GUI-Widgets.
 """
 
 import sys
@@ -17,15 +17,12 @@ import sys
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QApplication,
-    QFileDialog,
-    QHBoxLayout,
     QLabel,
-    QLineEdit,
     QMainWindow,
-    QPushButton,
     QStatusBar,
     QVBoxLayout,
     QWidget,
+    QComboBox,
 )
 
 from config.app_config import (
@@ -37,7 +34,9 @@ from config.app_config import (
 )
 
 from services.catalog_service import CatalogService
+
 from gui.widgets.header_widget import HeaderWidget
+from gui.widgets.file_selector import FileSelector
 
 
 class MainWindow(QMainWindow):
@@ -106,39 +105,13 @@ class MainWindow(QMainWindow):
         )
 
         # --------------------------------------------------
-        # Excel-Datei
+        # Excel-Auswahl
         # --------------------------------------------------
 
+        self.file_selector = FileSelector()
+
         layout.addWidget(
-            QLabel("Excel-Datei")
-        )
-
-        excel_row = QHBoxLayout()
-
-        self.excel_path = QLineEdit()
-
-        self.excel_path.setPlaceholderText(
-            "Keine Datei ausgewählt..."
-        )
-
-        button = QPushButton(
-            "Auswählen..."
-        )
-
-        button.clicked.connect(
-            self.select_excel_file,
-        )
-
-        excel_row.addWidget(
-            self.excel_path,
-        )
-
-        excel_row.addWidget(
-            button,
-        )
-
-        layout.addLayout(
-            excel_row,
+            self.file_selector,
         )
 
         # --------------------------------------------------
@@ -146,10 +119,8 @@ class MainWindow(QMainWindow):
         # --------------------------------------------------
 
         layout.addWidget(
-            QLabel("Region")
+            QLabel("Region"),
         )
-
-        from PySide6.QtWidgets import QComboBox
 
         self.region_combo = QComboBox()
 
@@ -176,25 +147,6 @@ class MainWindow(QMainWindow):
         self.setStatusBar(
             status,
         )
-
-    # --------------------------------------------------
-    # Datei auswählen
-    # --------------------------------------------------
-
-    def select_excel_file(self):
-
-        filename, _ = QFileDialog.getOpenFileName(
-            self,
-            "Excel-Datei auswählen",
-            "",
-            "Excel (*.xlsx *.xls)",
-        )
-
-        if filename:
-
-            self.excel_path.setText(
-                filename,
-            )
 
 
 def run():
