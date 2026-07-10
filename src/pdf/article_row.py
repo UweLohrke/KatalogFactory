@@ -14,7 +14,7 @@ bereitet die spätere Einbindung echter Produktbilder vor.
 """
 
 from reportlab.lib.units import cm
-
+from pdf.image_loader import ImageLoader
 
 class ArticleRow:
 
@@ -26,23 +26,38 @@ class ArticleRow:
         # --------------------------------------------------
         # Produktbild (Platzhalter)
         # --------------------------------------------------
-
+        image_loader = ImageLoader()
+        image_path = image_loader.get_image(artikel)
         image_size = 2.2 * cm
 
-        pdf.rect(
-            x,
-            y - image_size,
-            image_size,
-            image_size,
-        )
+        if image_path is not None:
 
-        pdf.setFont("Helvetica", 7)
+            pdf.drawImage(
+                str(image_path),
+                x,
+                y - image_size,
+                width=image_size,
+                height=image_size,
+                preserveAspectRatio=True,
+                mask="auto",
+            )
 
-        pdf.drawCentredString(
-            x + image_size / 2,
-            y - image_size / 2,
-            "Bild",
-        )
+        else:
+
+            pdf.rect(
+                x,
+                y - image_size,
+                width=image_size,
+                height=image_size,
+            )
+
+            pdf.setFont("Helvetica", 7)
+
+            pdf.drawCentredString(
+                x + image_size / 2,
+                y - image_size / 2,
+                "Bild",
+            )
 
         # --------------------------------------------------
         # Artikelinformationen
