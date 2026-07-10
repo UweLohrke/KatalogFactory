@@ -5,11 +5,11 @@ Datei:
 main_window.py
 
 Version:
-0.8.1
+0.8.3
 
 Beschreibung:
 Hauptfenster der KatalogFactory.
-Erste GUI mit Auswahl einer Excel-Datei.
+Verwendet eigene GUI-Widgets.
 """
 
 import sys
@@ -29,14 +29,15 @@ from PySide6.QtWidgets import (
 )
 
 from config.app_config import (
-    APP_NAME,
-    APP_VERSION,
     STATUS_READY,
     WINDOW_HEIGHT,
     WINDOW_MIN_HEIGHT,
     WINDOW_MIN_WIDTH,
     WINDOW_WIDTH,
 )
+
+from services.catalog_service import CatalogService
+from gui.widgets.header_widget import HeaderWidget
 
 
 class MainWindow(QMainWindow):
@@ -45,7 +46,11 @@ class MainWindow(QMainWindow):
 
         super().__init__()
 
-        self.setWindowTitle(APP_NAME)
+        self.catalog_service = CatalogService()
+
+        self.setWindowTitle(
+            "KatalogFactory by U.L."
+        )
 
         self.resize(
             WINDOW_WIDTH,
@@ -66,72 +71,114 @@ class MainWindow(QMainWindow):
     def create_ui(self):
 
         central_widget = QWidget()
-        self.setCentralWidget(central_widget)
 
-        layout = QVBoxLayout()
-        layout.setAlignment(Qt.AlignTop)
-        layout.setContentsMargins(30, 25, 30, 20)
-        layout.setSpacing(15)
-
-        central_widget.setLayout(layout)
-
-        # --------------------------------------------------
-        # Titel
-        # --------------------------------------------------
-
-        title = QLabel(APP_NAME)
-        title.setStyleSheet(
-            "font-size:24px; font-weight:bold;"
+        self.setCentralWidget(
+            central_widget,
         )
 
-        layout.addWidget(title)
+        layout = QVBoxLayout()
 
-        version = QLabel(f"Version {APP_VERSION}")
-        version.setStyleSheet("color: gray;")
+        layout.setAlignment(
+            Qt.AlignTop,
+        )
 
-        layout.addWidget(version)
+        layout.setContentsMargins(
+            30,
+            25,
+            30,
+            20,
+        )
 
-        layout.addSpacing(20)
+        layout.setSpacing(
+            16,
+        )
+
+        central_widget.setLayout(
+            layout,
+        )
+
+        # --------------------------------------------------
+        # Header
+        # --------------------------------------------------
+
+        layout.addWidget(
+            HeaderWidget(),
+        )
 
         # --------------------------------------------------
         # Excel-Datei
         # --------------------------------------------------
 
-        label = QLabel("Excel-Datei")
+        layout.addWidget(
+            QLabel("Excel-Datei")
+        )
 
-        layout.addWidget(label)
-
-        row = QHBoxLayout()
+        excel_row = QHBoxLayout()
 
         self.excel_path = QLineEdit()
+
         self.excel_path.setPlaceholderText(
             "Keine Datei ausgewählt..."
         )
 
-        button = QPushButton("Auswählen...")
+        button = QPushButton(
+            "Auswählen..."
+        )
 
         button.clicked.connect(
             self.select_excel_file,
         )
 
-        row.addWidget(self.excel_path)
-        row.addWidget(button)
+        excel_row.addWidget(
+            self.excel_path,
+        )
 
-        layout.addLayout(row)
+        excel_row.addWidget(
+            button,
+        )
+
+        layout.addLayout(
+            excel_row,
+        )
+
+        # --------------------------------------------------
+        # Region
+        # --------------------------------------------------
+
+        layout.addWidget(
+            QLabel("Region")
+        )
+
+        from PySide6.QtWidgets import QComboBox
+
+        self.region_combo = QComboBox()
+
+        self.region_combo.addItems(
+            self.catalog_service.get_regions()
+        )
+
+        layout.addWidget(
+            self.region_combo,
+        )
 
         layout.addStretch()
 
         # --------------------------------------------------
-        # Statusleiste
+        # Status
         # --------------------------------------------------
 
         status = QStatusBar()
-        status.showMessage(STATUS_READY)
 
-        self.setStatusBar(status)
+        status.showMessage(
+            STATUS_READY,
+        )
+
+        self.setStatusBar(
+            status,
+        )
 
     # --------------------------------------------------
-    # Excel-Datei auswählen
+    # Datei auswählen
     # --------------------------------------------------
 
     def select_excel_file(self):
@@ -145,7 +192,9 @@ class MainWindow(QMainWindow):
 
         if filename:
 
-            self.excel_path.setText(filename)
+            self.excel_path.setText(
+                filename,
+            )
 
 
 def run():
@@ -153,6 +202,9 @@ def run():
     app = QApplication(sys.argv)
 
     window = MainWindow()
+
     window.show()
 
-    sys.exit(app.exec())
+    sys.exit(
+        app.exec()
+    )
