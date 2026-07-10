@@ -26,6 +26,9 @@ class PDFGenerator:
 
         page_width, page_height = A4
 
+        self.page_number = 1
+        self.region = region
+
         self.draw_header(
             pdf,
             project_path,
@@ -105,7 +108,7 @@ class PDFGenerator:
         pdf.drawRightString(
             page_width - 2 * cm,
             page_height - 2.6 * cm,
-            "Seite 1",
+            f"Seite {self.page_number}",
         )
 
         pdf.line(
@@ -133,13 +136,15 @@ class PDFGenerator:
 
                 pdf.showPage()
 
+                self.page_number += 1
+
                 self.draw_header(
-                    pdf,
-                    Path(__file__).resolve().parents[2],
-                    page_width,
-                    page_height,
-                    "",
-                )
+                pdf,
+                Path(__file__).resolve().parents[2],
+                page_width,
+                page_height,
+                self.region,
+            )
 
                 y = page_height - 5.2 * cm
 
@@ -184,13 +189,14 @@ class PDFGenerator:
                 if y < 5 * cm:
 
                     pdf.showPage()
-
+                    self.page_number += 1
                     self.draw_header(
                         pdf,
                         Path(__file__).resolve().parents[2],
                         page_width,
                         page_height,
-                        "",
+                        self.region,
+                
                     )
 
                     y = page_height - 5.2 * cm
