@@ -5,7 +5,7 @@ Datei:
 main_window.py
 
 Version:
-0.8.4
+0.8.5
 
 Beschreibung:
 Hauptfenster der KatalogFactory.
@@ -17,12 +17,10 @@ import sys
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QApplication,
-    QLabel,
     QMainWindow,
     QStatusBar,
     QVBoxLayout,
     QWidget,
-    QComboBox,
 )
 
 from config.app_config import (
@@ -37,6 +35,7 @@ from services.catalog_service import CatalogService
 
 from gui.widgets.header_widget import HeaderWidget
 from gui.widgets.file_selector import FileSelector
+from gui.widgets.region_selector import RegionSelector
 
 
 class MainWindow(QMainWindow):
@@ -105,13 +104,11 @@ class MainWindow(QMainWindow):
         )
 
         # --------------------------------------------------
-        # Excel-Auswahl
+        # Excel-Datei
         # --------------------------------------------------
 
-        self.file_selector = FileSelector()
-
         layout.addWidget(
-            self.file_selector,
+            FileSelector(),
         )
 
         # --------------------------------------------------
@@ -119,17 +116,9 @@ class MainWindow(QMainWindow):
         # --------------------------------------------------
 
         layout.addWidget(
-            QLabel("Region"),
-        )
-
-        self.region_combo = QComboBox()
-
-        self.region_combo.addItems(
-            self.catalog_service.get_regions()
-        )
-
-        layout.addWidget(
-            self.region_combo,
+            RegionSelector(
+                self.catalog_service
+            ),
         )
 
         layout.addStretch()
