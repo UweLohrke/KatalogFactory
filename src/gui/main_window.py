@@ -5,63 +5,132 @@ Datei:
 main_window.py
 
 Version:
-0.8.0a
+0.8.0d
 
 Beschreibung:
-Erzeugt das Hauptfenster der KatalogFactory.
+Hauptfenster der KatalogFactory.
 """
 
-import tkinter as tk
+import sys
+
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QApplication,
+    QLabel,
+    QMainWindow,
+    QStatusBar,
+    QVBoxLayout,
+    QWidget,
+)
+
+from config.app_config import (
+    APP_NAME,
+    APP_VERSION,
+    STATUS_READY,
+    WINDOW_HEIGHT,
+    WINDOW_MIN_HEIGHT,
+    WINDOW_MIN_WIDTH,
+    WINDOW_WIDTH,
+)
 
 
-class MainWindow:
+class MainWindow(QMainWindow):
 
     def __init__(self):
 
-        self.root = tk.Tk()
+        super().__init__()
 
-        self.root.title("KatalogFactory by U.L.")
+        self.setWindowTitle(APP_NAME)
 
-        self.root.geometry("900x600")
-
-        self.root.minsize(800, 550)
-
-        self.create_widgets()
-
-    # --------------------------------------------------
-    # Oberfläche erstellen
-    # --------------------------------------------------
-
-    def create_widgets(self):
-
-        title = tk.Label(
-            self.root,
-            text="KatalogFactory by U.L.",
-            font=("Helvetica", 22, "bold"),
+        self.resize(
+            WINDOW_WIDTH,
+            WINDOW_HEIGHT,
         )
 
-        title.pack(pady=(30, 10))
-
-        version = tk.Label(
-            self.root,
-            text="Version 0.8.0a",
-            font=("Helvetica", 11),
+        self.setMinimumSize(
+            WINDOW_MIN_WIDTH,
+            WINDOW_MIN_HEIGHT,
         )
 
-        version.pack()
+        self.create_ui()
 
-        status = tk.Label(
-            self.root,
-            text="Status: Bereit",
-            font=("Helvetica", 10),
+    # --------------------------------------------------
+    # Oberfläche
+    # --------------------------------------------------
+
+    def create_ui(self):
+
+        central_widget = QWidget()
+
+        self.setCentralWidget(
+            central_widget,
         )
 
-        status.pack(side="bottom", pady=15)
+        layout = QVBoxLayout()
 
-    # --------------------------------------------------
-    # Fenster starten
-    # --------------------------------------------------
+        layout.setAlignment(Qt.AlignTop)
 
-    def run(self):
+        central_widget.setLayout(
+            layout,
+        )
 
-        self.root.mainloop()
+        title = QLabel(APP_NAME)
+
+        title.setAlignment(
+            Qt.AlignCenter,
+        )
+
+        title.setStyleSheet(
+            """
+            font-size: 24px;
+            font-weight: bold;
+            padding-top: 25px;
+            """
+        )
+
+        layout.addWidget(
+            title,
+        )
+
+        version = QLabel(
+            f"Version {APP_VERSION}",
+        )
+
+        version.setAlignment(
+            Qt.AlignCenter,
+        )
+
+        version.setStyleSheet(
+            """
+            font-size: 12px;
+            color: gray;
+            padding-bottom: 20px;
+            """
+        )
+
+        layout.addWidget(
+            version,
+        )
+
+        status_bar = QStatusBar()
+
+        status_bar.showMessage(
+            STATUS_READY,
+        )
+
+        self.setStatusBar(
+            status_bar,
+        )
+
+
+def run():
+
+    app = QApplication(sys.argv)
+
+    window = MainWindow()
+
+    window.show()
+
+    sys.exit(
+        app.exec(),
+    )
