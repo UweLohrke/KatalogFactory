@@ -28,42 +28,56 @@ class ArticleRow:
         # --------------------------------------------------
         image_loader = ImageLoader()
         image_path = image_loader.get_image(artikel)
-        image_size = 2.2 * cm
+
+        frame_size = 2.4 * cm
+        padding = 0.15 * cm
+        image_size = frame_size - (2 * padding)
+
+        # ----------------------------------------------
+        # Bildrahmen
+        # ----------------------------------------------
+
+        pdf.setStrokeColorRGB(0.75, 0.75, 0.75)
+        pdf.setLineWidth(0.5)
+
+        pdf.rect(
+            x,
+            y - frame_size,
+            frame_size,
+            frame_size,
+            fill=0,
+        )
 
         if image_path is not None:
 
             pdf.drawImage(
                 str(image_path),
-                x,
-                y - image_size,
+                x + padding,
+                y - frame_size + padding,
                 width=image_size,
                 height=image_size,
                 preserveAspectRatio=True,
+                anchor="c",
                 mask="auto",
             )
 
         else:
 
-            pdf.rect(
-                x,
-                y - image_size,
-                width=image_size,
-                height=image_size,
-            )
-
             pdf.setFont("Helvetica", 7)
 
             pdf.drawCentredString(
-                x + image_size / 2,
-                y - image_size / 2,
+                x + frame_size / 2,
+                y - frame_size / 2,
                 "Bild",
             )
+
+        pdf.setStrokeColorRGB(0, 0, 0)
 
         # --------------------------------------------------
         # Artikelinformationen
         # --------------------------------------------------
 
-        text_x = x + image_size + 0.4 * cm
+        text_x = x + frame_size + 0.4 * cm
 
         pdf.setFont(
             "Helvetica-Bold",
