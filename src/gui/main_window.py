@@ -5,11 +5,11 @@ Datei:
 main_window.py
 
 Version:
-0.8.5
+0.8.6
 
 Beschreibung:
 Hauptfenster der KatalogFactory.
-Zusammenführung der GUI-Widgets.
+Zusammenführung aller GUI-Widgets.
 """
 
 import sys
@@ -36,6 +36,7 @@ from services.catalog_service import CatalogService
 from gui.widgets.header_widget import HeaderWidget
 from gui.widgets.file_selector import FileSelector
 from gui.widgets.region_selector import RegionSelector
+from gui.widgets.output_selector import OutputSelector
 
 
 class MainWindow(QMainWindow):
@@ -99,32 +100,48 @@ class MainWindow(QMainWindow):
         # Header
         # --------------------------------------------------
 
+        self.header = HeaderWidget()
+
         layout.addWidget(
-            HeaderWidget(),
+            self.header,
         )
 
         # --------------------------------------------------
         # Excel-Datei
         # --------------------------------------------------
 
+        self.file_selector = FileSelector()
+
         layout.addWidget(
-            FileSelector(),
+            self.file_selector,
         )
 
         # --------------------------------------------------
         # Region
         # --------------------------------------------------
 
+        self.region_selector = RegionSelector(
+            self.catalog_service,
+        )
+
         layout.addWidget(
-            RegionSelector(
-                self.catalog_service
-            ),
+            self.region_selector,
+        )
+
+        # --------------------------------------------------
+        # Ausgabeordner
+        # --------------------------------------------------
+
+        self.output_selector = OutputSelector()
+
+        layout.addWidget(
+            self.output_selector,
         )
 
         layout.addStretch()
 
         # --------------------------------------------------
-        # Status
+        # Statusleiste
         # --------------------------------------------------
 
         status = QStatusBar()
@@ -147,5 +164,5 @@ def run():
     window.show()
 
     sys.exit(
-        app.exec()
+        app.exec(),
     )
