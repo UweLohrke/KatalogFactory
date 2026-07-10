@@ -5,11 +5,11 @@ Datei:
 image_loader.py
 
 Version:
-0.7.1
+0.7.2
 
 Beschreibung:
-Lädt Produktbilder anhand der EH-GTIN und liefert
-Informationen über vorhandene Bilder.
+Lädt Produktbilder anhand der EH-GTIN und stellt
+Hilfsfunktionen für die Bilddarstellung bereit.
 """
 
 from pathlib import Path
@@ -39,7 +39,15 @@ class ImageLoader:
         return None
 
     # --------------------------------------------------
-    # Bildgröße ermitteln
+    # Bild vorhanden?
+    # --------------------------------------------------
+
+    def has_image(self, artikel):
+
+        return self.get_image(artikel) is not None
+
+    # --------------------------------------------------
+    # Originalgröße des Bildes
     # --------------------------------------------------
 
     def get_image_size(self, artikel):
@@ -50,13 +58,44 @@ class ImageLoader:
             return None
 
         with Image.open(image_path) as image:
-
             return image.size
 
     # --------------------------------------------------
-    # Prüfen, ob Bild vorhanden
+    # Optimale Darstellung im Bildrahmen berechnen
     # --------------------------------------------------
 
-    def has_image(self, artikel):
+    def calculate_image_layout(
+        self,
+        image_width,
+        image_height,
+        frame_width,
+        frame_height,
+    ):
+        """
+        Berechnet die optimale Bildgröße innerhalb
+        eines festen Bildrahmens.
 
-        return self.get_image(artikel) is not None
+        Rückgabe:
+            draw_width,
+            draw_height,
+            offset_x,
+            offset_y
+        """
+
+        scale = min(
+            frame_width / image_width,
+            frame_height / image_height,
+        )
+
+        draw_width = image_width * scale
+        draw_height = image_height * scale
+
+        offset_x = (frame_width - draw_width) / 2
+        offset_y = (frame_height - draw_height) / 2
+
+        return (
+            draw_width,
+            draw_height,
+            offset_x,
+            offset_y,
+        )

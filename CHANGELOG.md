@@ -53,3 +53,12 @@ Alle wichtigen Änderungen der KatalogFactory werden hier dokumentiert.
 - ImageLoader erweitert
 - Bildgröße kann ausgelesen werden
 - Bild vorhanden/nicht vorhanden kann geprüft werden
+---
+
+## Version 0.7.2
+
+### Änderungen
+
+- ImageLoader um Layoutberechnung erweitert
+- Grundlage für automatische Bildskalierung geschaffen
+- Noch keine Änderungen an der PDF-Darstellung
