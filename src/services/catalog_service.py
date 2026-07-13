@@ -5,12 +5,14 @@ Datei:
 catalog_service.py
 
 Version:
-0.8.0a
+0.9.1
 
 Beschreibung:
 Steuert den kompletten Ablauf der Katalogerstellung.
-Die GUI ruft später ausschließlich diese Klasse auf.
+Die GUI kommuniziert ausschließlich mit dieser Klasse.
 """
+
+from pathlib import Path
 
 from importer.rewe_importer import ReweImporter
 from catalog.catalog_builder import CatalogBuilder
@@ -26,7 +28,7 @@ class CatalogService:
         self.pdf_generator = PDFGenerator()
 
     # --------------------------------------------------
-    # Verfügbare Regionen
+    # Regionen
     # --------------------------------------------------
 
     def get_regions(self):
@@ -37,15 +39,46 @@ class CatalogService:
     # Katalog erstellen
     # --------------------------------------------------
 
-    def create_catalog(self, region):
+    def create_catalog(
+        self,
+        excel_file,
+        region,
+        output_folder,
+    ):
+        """
+        Erstellt einen PDF-Katalog.
 
-        dataframe = self.importer.get_articles_for_region(region)
+        Parameter
+        ----------
+        excel_file : str | Path
+            Pfad zur Excel-Datei.
 
-        katalog = self.builder.build(dataframe)
+        region : str
+            Gewählte Region.
 
+        output_folder : str | Path
+            Zielordner für den PDF-Katalog.
+        """
+
+        excel_file = Path(excel_file)
+        output_folder = Path(output_folder)
+
+        # Excel laden
+        dataframe = self.importer.get_articles_for_region(
+            region,
+            excel_file=excel_file,
+        )
+
+        # Hersteller gruppieren
+        katalog = self.builder.build(
+            dataframe,
+        )
+
+        # PDF erzeugen
         pdf_datei = self.pdf_generator.create_pdf(
             region=region,
             katalog=katalog,
+            output_folder=output_folder,
         )
 
         return pdf_datei

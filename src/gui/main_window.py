@@ -5,11 +5,10 @@ Datei:
 main_window.py
 
 Version:
-0.9.0
+0.9.1
 
 Beschreibung:
 Hauptfenster der KatalogFactory.
-Zusammenführung aller GUI-Widgets.
 """
 
 import sys
@@ -18,6 +17,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
+    QMessageBox,
     QStatusBar,
     QVBoxLayout,
     QWidget,
@@ -145,6 +145,10 @@ class MainWindow(QMainWindow):
 
         self.create_button = CreateButton()
 
+        self.create_button.get_button().clicked.connect(
+            self.create_catalog,
+        )
+
         layout.addWidget(
             self.create_button,
         )
@@ -165,10 +169,76 @@ class MainWindow(QMainWindow):
             self.status_bar,
         )
 
+    # --------------------------------------------------
+    # Katalog erstellen
+    # --------------------------------------------------
 
+    def create_catalog(self):
+
+        excel_file = self.file_selector.get_file_path()
+
+        region = self.region_selector.get_selected_region()
+
+        output_folder = self.output_selector.get_output_path()
+
+        if not excel_file:
+
+            QMessageBox.warning(
+                self,
+                "Fehler",
+                "Bitte eine Excel-Datei auswählen.",
+            )
+
+            return
+
+        if not output_folder:
+
+            QMessageBox.warning(
+                self,
+                "Fehler",
+                "Bitte einen Ausgabeordner auswählen.",
+            )
+
+            return
+
+            self.status_bar.showMessage(
+            "Katalog wird erstellt..."
+        )
+
+        try:
+
+            pdf = self.catalog_service.create_catalog(
+                excel_file=excel_file,
+                region=region,
+                output_folder=output_folder,
+            )
+
+            self.status_bar.showMessage(
+                "Katalog erfolgreich erstellt."
+            )
+
+            QMessageBox.information(
+                self,
+                "Fertig",
+                f"PDF erfolgreich erstellt:\n\n{pdf}",
+            )
+
+        except Exception as error:
+
+            self.status_bar.showMessage(
+                "Fehler bei der Katalogerstellung."
+            )
+
+            QMessageBox.critical(
+                self,
+                "Fehler",
+                str(error),
+            )
 def run():
 
-    app = QApplication(sys.argv)
+    app = QApplication(
+        sys.argv,
+    )
 
     window = MainWindow()
 

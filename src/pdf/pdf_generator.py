@@ -1,3 +1,17 @@
+"""
+KatalogFactory by U.L.
+
+Datei:
+pdf_generator.py
+
+Version:
+0.9.1
+
+Beschreibung:
+Erzeugt den PDF-Katalog.
+Unterstützt frei wählbare Ausgabeordner.
+"""
+
 from pathlib import Path
 from datetime import datetime
 
@@ -10,14 +24,39 @@ from pdf.article_row import ArticleRow
 
 class PDFGenerator:
 
-    def create_pdf(self, region: str, katalog):
+    def __init__(self):
 
-        project_path = Path(__file__).resolve().parents[2]
+        self.page_number = 1
+        self.region = ""
 
-        output_folder = project_path / "kataloge"
-        output_folder.mkdir(exist_ok=True)
+    # --------------------------------------------------
+    # PDF erzeugen
+    # --------------------------------------------------
 
-        pdf_path = output_folder / f"{region.replace(' ', '_')}.pdf"
+    def create_pdf(
+        self,
+        region,
+        katalog,
+        output_folder=None,
+    ):
+
+        project_path = self.get_project_path()
+
+        if output_folder is None:
+
+            output_folder = project_path / "kataloge"
+
+        output_folder = Path(output_folder)
+
+        output_folder.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        pdf_path = self.create_output_path(
+            output_folder,
+            region,
+        )
 
         pdf = canvas.Canvas(
             str(pdf_path),
@@ -48,6 +87,31 @@ class PDFGenerator:
 
         return pdf_path
 
+    # --------------------------------------------------
+    # Projektpfad
+    # --------------------------------------------------
+
+    def get_project_path(self):
+
+        return Path(__file__).resolve().parents[2]
+
+    # --------------------------------------------------
+    # Ausgabedatei
+    # --------------------------------------------------
+
+    def create_output_path(
+        self,
+        output_folder,
+        region,
+    ):
+
+        filename = f"{region.replace(' ', '_')}.pdf"
+
+        return Path(output_folder) / filename
+
+    # --------------------------------------------------
+    # Kopfbereich
+    # --------------------------------------------------
 
     def draw_header(
         self,
@@ -117,6 +181,11 @@ class PDFGenerator:
             page_width - 2 * cm,
             page_height - 3.6 * cm,
         )
+
+    # --------------------------------------------------
+    # Katalog
+    # --------------------------------------------------
+
     def draw_catalog(
         self,
         pdf,
@@ -130,8 +199,8 @@ class PDFGenerator:
         y = page_height - 5.2 * cm
 
         for hersteller, artikel_liste in katalog.items():
+                        # Seitenwechsel vor Hersteller
 
-            # Prüfen, ob noch Platz auf der Seite ist
             if y < 5 * cm:
 
                 pdf.showPage()
@@ -139,16 +208,18 @@ class PDFGenerator:
                 self.page_number += 1
 
                 self.draw_header(
-                pdf,
-                Path(__file__).resolve().parents[2],
-                page_width,
-                page_height,
-                self.region,
-            )
+                    pdf,
+                    self.get_project_path(),
+                    page_width,
+                    page_height,
+                    self.region,
+                )
 
                 y = page_height - 5.2 * cm
 
-            # Herstellerüberschrift
+            # ------------------------------------------
+            # Hersteller
+            # ------------------------------------------
 
             pdf.setFont(
                 "Helvetica-Bold",
@@ -170,7 +241,9 @@ class PDFGenerator:
 
             y -= 1 * cm
 
-            # Alle Artikel des Herstellers
+            # ------------------------------------------
+            # Artikel
+            # ------------------------------------------
 
             for artikel in artikel_liste:
 
@@ -184,19 +257,20 @@ class PDFGenerator:
 
                 y -= article_row.ROW_HEIGHT
 
-                # Seitenumbruch innerhalb eines Herstellers
+                # Seitenwechsel innerhalb eines Herstellers
 
                 if y < 5 * cm:
 
                     pdf.showPage()
+
                     self.page_number += 1
+
                     self.draw_header(
                         pdf,
-                        Path(__file__).resolve().parents[2],
+                        self.get_project_path(),
                         page_width,
                         page_height,
                         self.region,
-                
                     )
 
                     y = page_height - 5.2 * cm
@@ -204,4 +278,3 @@ class PDFGenerator:
             # Abstand zum nächsten Hersteller
 
             y -= 0.8 * cm
-            
