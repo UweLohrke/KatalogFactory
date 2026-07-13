@@ -5,7 +5,7 @@ Datei:
 app_config.py
 
 Version:
-0.9.2
+0.9.4
 
 Beschreibung:
 Zentrale Konfiguration der Anwendung.
@@ -19,7 +19,7 @@ APP_NAME = "KatalogFactory"
 
 APP_SIGNATURE = "by U.L."
 
-APP_VERSION = "0.9.2"
+APP_VERSION = "0.9.4"
 
 # --------------------------------------------------
 # Hauptfenster
