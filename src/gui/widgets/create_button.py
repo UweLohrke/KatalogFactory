@@ -5,7 +5,7 @@ Datei:
 create_button.py
 
 Version:
-0.9.0
+0.9.3
 
 Beschreibung:
 Widget für den Button
@@ -48,7 +48,7 @@ class CreateButton(QWidget):
         )
 
         self.button = QPushButton(
-            "KATALOG ERSTELLEN"
+            "KATALOG ERSTELLEN",
         )
 
         self.button.setMinimumHeight(
@@ -81,3 +81,23 @@ class CreateButton(QWidget):
     def get_button(self):
 
         return self.button
+
+    # --------------------------------------------------
+    # Button deaktivieren
+    # --------------------------------------------------
+
+    def disable(self):
+
+        self.button.setEnabled(
+            False,
+        )
+
+    # --------------------------------------------------
+    # Button aktivieren
+    # --------------------------------------------------
+
+    def enable(self):
+
+        self.button.setEnabled(
+            True,
+        )

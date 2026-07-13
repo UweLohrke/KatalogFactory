@@ -207,7 +207,9 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage(
             STATUS_LOADING,
         )
+        self.create_button.disable()
 
+        QApplication.processEvents()
         try:
 
             pdf = self.catalog_service.create_catalog(
@@ -220,7 +222,7 @@ class MainWindow(QMainWindow):
                 STATUS_SUCCESS,
             )
             
-
+            self.create_button.enable()
             QMessageBox.information(
                 self,
                 "Fertig",
@@ -232,13 +234,14 @@ class MainWindow(QMainWindow):
             self.status_bar.showMessage(
                 STATUS_ERROR,
             )
-
             QMessageBox.critical(
                 self,
                 "Fehler",
                 str(error),
             )
+        finally:
 
+            self.create_button.enable()
 def run():
 
     app = QApplication(
