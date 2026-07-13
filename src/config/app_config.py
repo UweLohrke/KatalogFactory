@@ -5,60 +5,42 @@ Datei:
 app_config.py
 
 Version:
-0.8.0c
+0.9.2
 
 Beschreibung:
 Zentrale Konfiguration der Anwendung.
 """
 
 # --------------------------------------------------
-# Anwendung
+# Programm
 # --------------------------------------------------
 
-APP_NAME = "KatalogFactory by U.L."
+APP_NAME = "KatalogFactory"
 
-APP_VERSION = "0.8.0"
+APP_SIGNATURE = "by U.L."
 
-AUTHOR = "U.L."
+APP_VERSION = "0.9.2"
 
 # --------------------------------------------------
 # Hauptfenster
 # --------------------------------------------------
 
-WINDOW_WIDTH = 900
+WINDOW_WIDTH = 920
 
-WINDOW_HEIGHT = 600
+WINDOW_HEIGHT = 650
 
-WINDOW_MIN_WIDTH = 800
+WINDOW_MIN_WIDTH = 900
 
-WINDOW_MIN_HEIGHT = 550
-
-# --------------------------------------------------
-# Standardordner
-# --------------------------------------------------
-
-IMAGE_FOLDER = "bilder"
-
-EXCEL_FOLDER = "excel"
-
-OUTPUT_FOLDER = "kataloge"
+WINDOW_MIN_HEIGHT = 650
 
 # --------------------------------------------------
-# Farben
-# --------------------------------------------------
-
-PRIMARY_COLOR = "#2E7D32"
-
-BACKGROUND_COLOR = "#F7F7F7"
-
-TEXT_COLOR = "#202020"
-
-# --------------------------------------------------
-# Statusmeldungen
+# Statusleiste
 # --------------------------------------------------
 
 STATUS_READY = "Bereit"
 
-STATUS_CREATING = "Katalog wird erstellt..."
+STATUS_LOADING = "Katalog wird erstellt..."
 
-STATUS_FINISHED = "Katalog erfolgreich erstellt."
+STATUS_SUCCESS = "Katalog erfolgreich erstellt."
+
+STATUS_ERROR = "Fehler bei der Katalogerstellung."

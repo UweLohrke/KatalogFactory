@@ -24,7 +24,10 @@ from PySide6.QtWidgets import (
 )
 
 from config.app_config import (
+    STATUS_ERROR,
+    STATUS_LOADING,
     STATUS_READY,
+    STATUS_SUCCESS,
     WINDOW_HEIGHT,
     WINDOW_MIN_HEIGHT,
     WINDOW_MIN_WIDTH,
@@ -201,8 +204,8 @@ class MainWindow(QMainWindow):
 
             return
 
-            self.status_bar.showMessage(
-            "Katalog wird erstellt..."
+        self.status_bar.showMessage(
+            STATUS_LOADING,
         )
 
         try:
@@ -214,8 +217,9 @@ class MainWindow(QMainWindow):
             )
 
             self.status_bar.showMessage(
-                "Katalog erfolgreich erstellt."
+                STATUS_SUCCESS,
             )
+            
 
             QMessageBox.information(
                 self,
@@ -226,7 +230,7 @@ class MainWindow(QMainWindow):
         except Exception as error:
 
             self.status_bar.showMessage(
-                "Fehler bei der Katalogerstellung."
+                STATUS_ERROR,
             )
 
             QMessageBox.critical(
@@ -234,6 +238,7 @@ class MainWindow(QMainWindow):
                 "Fehler",
                 str(error),
             )
+
 def run():
 
     app = QApplication(
