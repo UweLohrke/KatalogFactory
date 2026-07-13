@@ -5,7 +5,7 @@ Datei:
 header_widget.py
 
 Version:
-0.8.3
+0.9.0
 
 Beschreibung:
 Header-Widget der KatalogFactory.
@@ -46,22 +46,37 @@ class HeaderWidget(QWidget):
             0,
         )
 
+        main_layout.setSpacing(
+            2,
+        )
+
         self.setLayout(
             main_layout,
         )
 
-        # ----------------------------------------------
-        # Titelzeile
-        # ----------------------------------------------
+        # --------------------------------------------------
+        # Titel
+        # --------------------------------------------------
 
-        title_row = QHBoxLayout()
+        title_layout = QHBoxLayout()
 
-        title_row.setAlignment(
+        title_layout.setContentsMargins(
+            0,
+            0,
+            0,
+            0,
+        )
+
+        title_layout.setSpacing(
+            1,
+        )
+
+        title_layout.setAlignment(
             Qt.AlignLeft,
         )
 
         title = QLabel(
-            "KatalogFactory",
+            "KatalogFactory"
         )
 
         title.setStyleSheet(
@@ -72,44 +87,43 @@ class HeaderWidget(QWidget):
         )
 
         signature = QLabel(
-            "by U.L.",
+            "by U.L."
         )
 
         signature.setStyleSheet(
             """
-            font-size: 10px;
-            color: #A0A0A0;
-            padding-top: 10px;
-            padding-left: 5px;
+            font-size: 9px;
+            color: #9A9A9A;
+            padding-top: 11px;
             """
         )
 
-        title_row.addWidget(
+        title_layout.addWidget(
             title,
         )
 
-        title_row.addWidget(
+        title_layout.addWidget(
             signature,
         )
 
-        title_row.addStretch()
+        title_layout.addStretch()
 
         main_layout.addLayout(
-            title_row,
+            title_layout,
         )
 
-        # ----------------------------------------------
+        # --------------------------------------------------
         # Version
-        # ----------------------------------------------
+        # --------------------------------------------------
 
         version = QLabel(
-            f"Version {APP_VERSION}",
+            f"Version {APP_VERSION}"
         )
 
         version.setStyleSheet(
             """
-            color: gray;
-            margin-top: 8px;
+            color: #8A8A8A;
+            font-size: 11px;
             """
         )
 

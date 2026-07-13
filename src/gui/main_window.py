@@ -5,7 +5,7 @@ Datei:
 main_window.py
 
 Version:
-0.8.6
+0.9.0
 
 Beschreibung:
 Hauptfenster der KatalogFactory.
@@ -37,6 +37,7 @@ from gui.widgets.header_widget import HeaderWidget
 from gui.widgets.file_selector import FileSelector
 from gui.widgets.region_selector import RegionSelector
 from gui.widgets.output_selector import OutputSelector
+from gui.widgets.create_button import CreateButton
 
 
 class MainWindow(QMainWindow):
@@ -138,20 +139,30 @@ class MainWindow(QMainWindow):
             self.output_selector,
         )
 
+        # --------------------------------------------------
+        # Button
+        # --------------------------------------------------
+
+        self.create_button = CreateButton()
+
+        layout.addWidget(
+            self.create_button,
+        )
+
         layout.addStretch()
 
         # --------------------------------------------------
         # Statusleiste
         # --------------------------------------------------
 
-        status = QStatusBar()
+        self.status_bar = QStatusBar()
 
-        status.showMessage(
+        self.status_bar.showMessage(
             STATUS_READY,
         )
 
         self.setStatusBar(
-            status,
+            self.status_bar,
         )
 
 
