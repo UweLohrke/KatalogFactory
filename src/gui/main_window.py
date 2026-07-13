@@ -5,15 +5,17 @@ Datei:
 main_window.py
 
 Version:
-0.9.4
+0.9.5
 
 Beschreibung:
 Hauptfenster der KatalogFactory.
 """
 
 import sys
+from pathlib import Path
 
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -51,6 +53,22 @@ class MainWindow(QMainWindow):
 
         self.catalog_service = CatalogService()
 
+        # --------------------------------------------------
+        # Fenster-Icon
+        # --------------------------------------------------
+
+        project_path = Path(__file__).resolve().parents[2]
+
+        icon = project_path / "assets" / "icon.png"
+
+        if icon.exists():
+            print(icon)
+            print(icon.exists())
+
+            self.setWindowIcon(
+                QIcon(str(icon))
+            )
+
         self.setWindowTitle(
             "KatalogFactory by U.L."
         )
@@ -65,13 +83,7 @@ class MainWindow(QMainWindow):
             WINDOW_MIN_HEIGHT,
         )
 
-
         self.create_ui()
-
-    # --------------------------------------------------
-    # Menü
-    # --------------------------------------------------
-
 
     # --------------------------------------------------
     # Oberfläche
@@ -227,23 +239,22 @@ class MainWindow(QMainWindow):
 
             self.create_button.enable()
 
-    # --------------------------------------------------
-    # Menüfunktionen
-    # --------------------------------------------------
-
-
-    # --------------------------------------------------
-    # Über
-    # --------------------------------------------------
-
-    
-
 
 def run():
 
     app = QApplication(
         sys.argv,
     )
+
+    project_path = Path(__file__).resolve().parents[2]
+
+    icon = project_path / "assets" / "icon.png"
+
+    if icon.exists():
+
+        app.setWindowIcon(
+            QIcon(str(icon))
+        )
 
     window = MainWindow()
 
