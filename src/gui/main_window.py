@@ -5,7 +5,7 @@ Datei:
 main_window.py
 
 Version:
-0.9.5
+1.0.0
 
 Beschreibung:
 Hauptfenster der KatalogFactory.
@@ -62,8 +62,7 @@ class MainWindow(QMainWindow):
         icon = project_path / "assets" / "icon.png"
 
         if icon.exists():
-            print(icon)
-            print(icon.exists())
+            
 
             self.setWindowIcon(
                 QIcon(str(icon))

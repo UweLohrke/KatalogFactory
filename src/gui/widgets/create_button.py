@@ -5,7 +5,7 @@ Datei:
 create_button.py
 
 Version:
-0.9.3
+1.0.0
 
 Beschreibung:
 Widget für den Button

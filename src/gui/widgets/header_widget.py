@@ -5,7 +5,7 @@ Datei:
 header_widget.py
 
 Version:
-0.9.0
+1.0.0
 
 Beschreibung:
 Header-Widget der KatalogFactory.
