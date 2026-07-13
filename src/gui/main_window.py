@@ -5,7 +5,7 @@ Datei:
 main_window.py
 
 Version:
-0.9.1
+0.9.4
 
 Beschreibung:
 Hauptfenster der KatalogFactory.
@@ -14,8 +14,10 @@ Hauptfenster der KatalogFactory.
 import sys
 
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
     QApplication,
+    QFileDialog,
     QMainWindow,
     QMessageBox,
     QStatusBar,
@@ -65,7 +67,75 @@ class MainWindow(QMainWindow):
             WINDOW_MIN_HEIGHT,
         )
 
+        self.create_menu()
+
         self.create_ui()
+
+    # --------------------------------------------------
+    # Menü
+    # --------------------------------------------------
+
+    def create_menu(self):
+
+        menu_bar = self.menuBar()
+
+        datei_menu = menu_bar.addMenu("&Datei")
+
+        excel_action = QAction(
+            "Excel-Datei öffnen...",
+            self,
+        )
+
+        excel_action.triggered.connect(
+            self.menu_select_excel,
+        )
+
+        datei_menu.addAction(
+            excel_action,
+        )
+
+        output_action = QAction(
+            "Ausgabeordner auswählen...",
+            self,
+        )
+
+        output_action.triggered.connect(
+            self.menu_select_output,
+        )
+
+        datei_menu.addAction(
+            output_action,
+        )
+
+        datei_menu.addSeparator()
+
+        exit_action = QAction(
+            "Beenden",
+            self,
+        )
+
+        exit_action.triggered.connect(
+            self.close,
+        )
+
+        datei_menu.addAction(
+            exit_action,
+        )
+
+        hilfe_menu = menu_bar.addMenu("&Hilfe")
+
+        about_action = QAction(
+            "Über KatalogFactory...",
+            self,
+        )
+
+        about_action.triggered.connect(
+            self.show_about,
+        )
+
+        hilfe_menu.addAction(
+            about_action,
+        )
 
     # --------------------------------------------------
     # Oberfläche
@@ -100,29 +170,17 @@ class MainWindow(QMainWindow):
             layout,
         )
 
-        # --------------------------------------------------
-        # Header
-        # --------------------------------------------------
-
         self.header = HeaderWidget()
 
         layout.addWidget(
             self.header,
         )
 
-        # --------------------------------------------------
-        # Excel-Datei
-        # --------------------------------------------------
-
         self.file_selector = FileSelector()
 
         layout.addWidget(
             self.file_selector,
         )
-
-        # --------------------------------------------------
-        # Region
-        # --------------------------------------------------
 
         self.region_selector = RegionSelector(
             self.catalog_service,
@@ -132,19 +190,11 @@ class MainWindow(QMainWindow):
             self.region_selector,
         )
 
-        # --------------------------------------------------
-        # Ausgabeordner
-        # --------------------------------------------------
-
         self.output_selector = OutputSelector()
 
         layout.addWidget(
             self.output_selector,
         )
-
-        # --------------------------------------------------
-        # Button
-        # --------------------------------------------------
 
         self.create_button = CreateButton()
 
@@ -158,10 +208,6 @@ class MainWindow(QMainWindow):
 
         layout.addStretch()
 
-        # --------------------------------------------------
-        # Statusleiste
-        # --------------------------------------------------
-
         self.status_bar = QStatusBar()
 
         self.status_bar.showMessage(
@@ -171,8 +217,7 @@ class MainWindow(QMainWindow):
         self.setStatusBar(
             self.status_bar,
         )
-
-    # --------------------------------------------------
+            # --------------------------------------------------
     # Katalog erstellen
     # --------------------------------------------------
 
@@ -207,9 +252,11 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage(
             STATUS_LOADING,
         )
+
         self.create_button.disable()
 
         QApplication.processEvents()
+
         try:
 
             pdf = self.catalog_service.create_catalog(
@@ -221,8 +268,7 @@ class MainWindow(QMainWindow):
             self.status_bar.showMessage(
                 STATUS_SUCCESS,
             )
-            
-            self.create_button.enable()
+
             QMessageBox.information(
                 self,
                 "Fertig",
@@ -234,14 +280,67 @@ class MainWindow(QMainWindow):
             self.status_bar.showMessage(
                 STATUS_ERROR,
             )
+
             QMessageBox.critical(
                 self,
                 "Fehler",
                 str(error),
             )
+
         finally:
 
             self.create_button.enable()
+
+    # --------------------------------------------------
+    # Menüfunktionen
+    # --------------------------------------------------
+
+    def menu_select_excel(self):
+
+        filename, _ = QFileDialog.getOpenFileName(
+            self,
+            "Excel-Datei auswählen",
+            "",
+            "Excel (*.xlsx *.xls)",
+        )
+
+        if filename:
+
+            self.file_selector.file_path.setText(
+                filename,
+            )
+
+    def menu_select_output(self):
+
+        folder = QFileDialog.getExistingDirectory(
+            self,
+            "Ausgabeordner auswählen",
+        )
+
+        if folder:
+
+            self.output_selector.output_path.setText(
+                folder,
+            )
+
+    # --------------------------------------------------
+    # Über
+    # --------------------------------------------------
+
+    def show_about(self):
+
+        QMessageBox.about(
+            self,
+            "Über KatalogFactory",
+            (
+                "KatalogFactory by U.L.\n\n"
+                "Version 0.9.4\n\n"
+                "Erstellt von\n"
+                "U.L. Näker"
+            ),
+        )
+
+
 def run():
 
     app = QApplication(
