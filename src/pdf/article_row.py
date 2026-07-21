@@ -5,39 +5,57 @@ Datei:
 article_row.py
 
 Version:
-0.5.3
+0.5.4
 
 Beschreibung:
-Zeichnet eine kompakte Artikelzeile für den PDF-Katalog.
-Die Version 0.5.3 reduziert den Platzbedarf deutlich und
-bereitet die spätere Einbindung echter Produktbilder vor.
+Zeichnet eine kompakte Artikelzeile
+für den PDF-Katalog.
 """
 
 from reportlab.lib.units import cm
+
 from pdf.image_loader import ImageLoader
 from pdf.barcode_generator import BarcodeGenerator
+
+
 class ArticleRow:
 
     # Höhe einer kompletten Artikelzeile
     ROW_HEIGHT = 2.7 * cm
 
-    def draw(self, pdf, artikel, x, y, page_width):
+    def __init__(self):
+
+        self.image_loader = ImageLoader()
+
+        self.barcode = BarcodeGenerator()
+
+    def draw(
+        self,
+        pdf,
+        artikel,
+        x,
+        y,
+        page_width,
+    ):
 
         # --------------------------------------------------
-        # Produktbild (Platzhalter)
+        # Produktbild
         # --------------------------------------------------
-        image_loader = ImageLoader()
-        image_path = image_loader.get_image(artikel)
+
+        image_path = self.image_loader.get_image(
+            artikel,
+        )
 
         frame_size = 2.4 * cm
         padding = 0.15 * cm
         image_size = frame_size - (2 * padding)
 
-        # ----------------------------------------------
-        # Bildrahmen
-        # ----------------------------------------------
+        pdf.setStrokeColorRGB(
+            0.75,
+            0.75,
+            0.75,
+        )
 
-        pdf.setStrokeColorRGB(0.75, 0.75, 0.75)
         pdf.setLineWidth(0.5)
 
         pdf.rect(
@@ -63,7 +81,10 @@ class ArticleRow:
 
         else:
 
-            pdf.setFont("Helvetica", 7)
+            pdf.setFont(
+                "Helvetica",
+                7,
+            )
 
             pdf.drawCentredString(
                 x + frame_size / 2,
@@ -71,7 +92,11 @@ class ArticleRow:
                 "Bild",
             )
 
-        pdf.setStrokeColorRGB(0, 0, 0)
+        pdf.setStrokeColorRGB(
+            0,
+            0,
+            0,
+        )
 
         # --------------------------------------------------
         # Artikelinformationen
@@ -134,11 +159,9 @@ class ArticleRow:
         # Barcode
         # --------------------------------------------------
 
-        barcode = BarcodeGenerator()
-
         barcode_x = page_width - 4.6 * cm
 
-        barcode.draw(
+        self.barcode.draw(
             pdf,
             artikel["EH GTIN"],
             barcode_x,

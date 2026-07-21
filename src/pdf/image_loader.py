@@ -1,63 +1,85 @@
 """
-KatalogFactory
+KatalogFactory by U.L.
 
 Datei:
 image_loader.py
 
 Version:
-0.7.2
+1.1.0
 
 Beschreibung:
-Lädt Produktbilder anhand der EH-GTIN und stellt
-Hilfsfunktionen für die Bilddarstellung bereit.
+Lädt Produktbilder über den ImageService
+und stellt Hilfsfunktionen für die
+Bilddarstellung bereit.
 """
 
-from pathlib import Path
 from PIL import Image
+
+from services.image_service import (
+    ImageService,
+)
 
 
 class ImageLoader:
 
     def __init__(self):
 
-        project_path = Path(__file__).resolve().parents[2]
-        self.image_folder = project_path / "bilder"
+        self.image_service = ImageService()
 
     # --------------------------------------------------
     # Bildpfad ermitteln
     # --------------------------------------------------
 
-    def get_image(self, artikel):
+    def get_image(
+        self,
+        artikel,
+    ):
 
-        gtin = str(artikel["EH GTIN"]).strip()
+        gtin = str(
+            artikel["EH GTIN"]
+        ).strip()
 
-        image_path = self.image_folder / f"{gtin}.jpg"
-
-        if image_path.exists():
-            return image_path
-
-        return None
+        return self.image_service.get_image(
+            gtin,
+        )
 
     # --------------------------------------------------
     # Bild vorhanden?
     # --------------------------------------------------
 
-    def has_image(self, artikel):
+    def has_image(
+        self,
+        artikel,
+    ):
 
-        return self.get_image(artikel) is not None
+        return (
+            self.get_image(
+                artikel,
+            )
+            is not None
+        )
 
     # --------------------------------------------------
     # Originalgröße des Bildes
     # --------------------------------------------------
 
-    def get_image_size(self, artikel):
+    def get_image_size(
+        self,
+        artikel,
+    ):
 
-        image_path = self.get_image(artikel)
+        image_path = self.get_image(
+            artikel,
+        )
 
         if image_path is None:
+
             return None
 
-        with Image.open(image_path) as image:
+        with Image.open(
+            image_path,
+        ) as image:
+
             return image.size
 
     # --------------------------------------------------
@@ -71,16 +93,6 @@ class ImageLoader:
         frame_width,
         frame_height,
     ):
-        """
-        Berechnet die optimale Bildgröße innerhalb
-        eines festen Bildrahmens.
-
-        Rückgabe:
-            draw_width,
-            draw_height,
-            offset_x,
-            offset_y
-        """
 
         scale = min(
             frame_width / image_width,
@@ -88,10 +100,16 @@ class ImageLoader:
         )
 
         draw_width = image_width * scale
+
         draw_height = image_height * scale
 
-        offset_x = (frame_width - draw_width) / 2
-        offset_y = (frame_height - draw_height) / 2
+        offset_x = (
+            frame_width - draw_width
+        ) / 2
+
+        offset_y = (
+            frame_height - draw_height
+        ) / 2
 
         return (
             draw_width,

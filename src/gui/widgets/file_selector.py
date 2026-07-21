@@ -5,11 +5,14 @@ Datei:
 file_selector.py
 
 Version:
-0.8.4
+1.0.0
 
 Beschreibung:
 Widget zur Auswahl einer Excel-Datei.
+Merkt sich automatisch den zuletzt verwendeten Ordner.
 """
+
+from pathlib import Path
 
 from PySide6.QtWidgets import (
     QFileDialog,
@@ -21,6 +24,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from gui.settings.app_settings import AppSettings
+
 
 class FileSelector(QWidget):
 
@@ -28,7 +33,12 @@ class FileSelector(QWidget):
 
         super().__init__()
 
+        self.settings = AppSettings()
+
         self.create_ui()
+        self.file_path.setText(
+    self.settings.get_last_excel_file()
+)
 
     # --------------------------------------------------
     # Oberfläche
@@ -49,8 +59,6 @@ class FileSelector(QWidget):
             layout,
         )
 
-        # Überschrift
-
         label = QLabel(
             "Excel-Datei",
         )
@@ -58,8 +66,6 @@ class FileSelector(QWidget):
         layout.addWidget(
             label,
         )
-
-        # Eingabezeile
 
         row = QHBoxLayout()
 
@@ -95,10 +101,12 @@ class FileSelector(QWidget):
 
     def select_file(self):
 
+        last_folder = self.settings.get_last_excel_folder()
+
         filename, _ = QFileDialog.getOpenFileName(
             self,
             "Excel-Datei auswählen",
-            "",
+            last_folder,
             "Excel (*.xlsx *.xls)",
         )
 
@@ -106,6 +114,13 @@ class FileSelector(QWidget):
 
             self.file_path.setText(
                 filename,
+            )
+
+            self.settings.set_last_excel_folder(
+                str(Path(filename).parent)
+            )
+            self.settings.set_last_excel_file(
+                filename
             )
 
     # --------------------------------------------------

@@ -5,7 +5,7 @@ Datei:
 catalog_service.py
 
 Version:
-0.9.1
+1.1.1
 
 Beschreibung:
 Steuert den kompletten Ablauf der Katalogerstellung.
@@ -17,6 +17,7 @@ from pathlib import Path
 from importer.rewe_importer import ReweImporter
 from catalog.catalog_builder import CatalogBuilder
 from pdf.pdf_generator import PDFGenerator
+from services.image_service import ImageService
 
 
 class CatalogService:
@@ -26,6 +27,7 @@ class CatalogService:
         self.importer = ReweImporter()
         self.builder = CatalogBuilder()
         self.pdf_generator = PDFGenerator()
+        self.image_service = ImageService()
 
     # --------------------------------------------------
     # Regionen
@@ -74,7 +76,18 @@ class CatalogService:
             dataframe,
         )
 
+        # ----------------------------------------------
+        # Fehlende Bilder herunterladen
+        # ----------------------------------------------
+
+        self.image_service.download_missing_images(
+            katalog,
+        )
+
+        # ----------------------------------------------
         # PDF erzeugen
+        # ----------------------------------------------
+
         pdf_datei = self.pdf_generator.create_pdf(
             region=region,
             katalog=katalog,

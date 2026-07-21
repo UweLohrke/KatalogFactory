@@ -5,10 +5,11 @@ Datei:
 output_selector.py
 
 Version:
-0.8.6
+1.0.0
 
 Beschreibung:
 Widget zur Auswahl des Ausgabeordners.
+Merkt sich automatisch den zuletzt verwendeten Ordner.
 """
 
 from PySide6.QtWidgets import (
@@ -21,6 +22,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from gui.settings.app_settings import AppSettings
+
 
 class OutputSelector(QWidget):
 
@@ -28,7 +31,12 @@ class OutputSelector(QWidget):
 
         super().__init__()
 
+        self.settings = AppSettings()
+
         self.create_ui()
+        self.output_path.setText(
+        self.settings.get_last_output_folder()
+        )
 
     # --------------------------------------------------
     # Oberfläche
@@ -91,14 +99,21 @@ class OutputSelector(QWidget):
 
     def select_folder(self):
 
+        last_folder = self.settings.get_last_output_folder()
+
         folder = QFileDialog.getExistingDirectory(
             self,
             "Ausgabeordner auswählen",
+            last_folder,
         )
 
         if folder:
 
             self.output_path.setText(
+                folder,
+            )
+
+            self.settings.set_last_output_folder(
                 folder,
             )
 
