@@ -43,10 +43,15 @@ class ImageService:
     # Bildpfad ermitteln
     # --------------------------------------------------
 
+           # --------------------------------------------------
+    # Bildpfad ermitteln
+    # --------------------------------------------------
+
     def get_image_path(
         self,
         gtin,
     ):
+
 
         gtin = str(gtin).strip()
 
@@ -54,6 +59,10 @@ class ImageService:
             self.image_folder /
             f"{gtin}.jpg"
         )
+
+        print(f"GTIN: {gtin}")
+        print(f"Suche: {image_path}")
+        print(f"Existiert: {image_path.exists()}")
 
         if image_path.exists():
 
