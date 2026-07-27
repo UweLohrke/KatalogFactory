@@ -5,7 +5,7 @@ Datei:
 image_service.py
 
 Version:
-1.1.3
+1.1.4
 
 Beschreibung:
 Verwaltet Produktbilder.
@@ -85,17 +85,15 @@ class ImageService:
     # Einzelnes Bild herunterladen
     # --------------------------------------------------
 
-        # --------------------------------------------------
-    # Einzelnes Bild herunterladen
-    # --------------------------------------------------
-
     def download_image(
         self,
         gtin,
+        artikel=None,
     ):
 
         image_url = self.provider_manager.get_image_url(
             gtin,
+            artikel,
         )
 
         if image_url is None:
@@ -172,7 +170,7 @@ class ImageService:
         katalog,
     ):
 
-        gtins = set()
+        artikel_nach_gtin = {}
 
         for artikel_liste in katalog.values():
 
@@ -182,14 +180,12 @@ class ImageService:
                     artikel["EH GTIN"]
                 ).strip()
 
-                gtins.add(
-                    gtin,
-                )
+                artikel_nach_gtin[gtin] = artikel
 
         print()
 
         print(
-            f"{len(gtins)} eindeutige GTIN(s) gefunden."
+            f"{len(artikel_nach_gtin)} eindeutige GTIN(s) gefunden."
         )
 
         print()
@@ -198,7 +194,7 @@ class ImageService:
         skipped = 0
         missing = 0
 
-        for gtin in sorted(gtins):
+        for gtin in sorted(artikel_nach_gtin):
 
             if self.has_image(
                 gtin,
@@ -214,6 +210,7 @@ class ImageService:
 
             image = self.download_image(
                 gtin,
+                artikel_nach_gtin[gtin],
             )
 
             if image is None:
