@@ -5,7 +5,7 @@ Datei:
 open_food_facts_client.py
 
 Version:
-1.1.0
+1.2.0
 
 Beschreibung:
 Kommunikation mit der
@@ -14,6 +14,8 @@ Open Food Facts API.
 Liefert die Bild-URL
 zu einer EH-GTIN.
 """
+
+import time
 
 import requests
 
@@ -28,10 +30,14 @@ class OpenFoodFactsClient:
 
         self.timeout = 10
 
+        self.max_retries = 3
+
+        self.retry_delay = 2
+
         self.headers = {
             "User-Agent": (
-                "KatalogFactory/1.1 "
-                "(https://github.com/ul/katalogfactory)"
+                "KatalogFactory/1.2 "
+                "(https://github.com/UweLohrke/KatalogFactory)"
             ),
             "Accept": "application/json",
         }
@@ -53,46 +59,82 @@ class OpenFoodFactsClient:
             f"{self.BASE_URL}/{gtin}.json"
         )
 
-        try:
+        for attempt in range(
+            1,
+            self.max_retries + 1,
+        ):
 
-            response = requests.get(
-                url,
-                headers=self.headers,
-                timeout=self.timeout,
-            )
+            try:
 
-            print(
-                "HTTP:",
-                response.status_code,
-            )
+                response = requests.get(
+                    url,
+                    headers=self.headers,
+                    timeout=self.timeout,
+                )
 
-            if response.status_code != 200:
+                print(
+                    f"[OFF] Versuch {attempt}: HTTP {response.status_code}"
+                )
+
+                if response.status_code == 200:
+
+                    data = response.json()
+
+                    product = data.get(
+                        "product",
+                        {},
+                    )
+
+                    image_url = product.get(
+                        "image_front_url",
+                    )
+
+                    if image_url:
+
+                        print(
+                            f"[OFF] Bild gefunden: {gtin}"
+                        )
+
+                    else:
+
+                        print(
+                            f"[OFF] Kein Bild: {gtin}"
+                        )
+
+                    return image_url
+
+                if response.status_code in (
+                    429,
+                    500,
+                    502,
+                    503,
+                    504,
+                ):
+
+                    print(
+                        "[OFF] Server ausgelastet - neuer Versuch..."
+                    )
+
+                    if attempt < self.max_retries:
+
+                        time.sleep(
+                            self.retry_delay,
+                        )
+
+                    continue
 
                 return None
 
-            data = response.json()
+            except requests.RequestException as error:
 
-            product = data.get(
-                "product",
-                {},
-            )
+                print(
+                    f"[OFF] Netzwerkfehler: {error}"
+                )
 
-            image_url = product.get(
-                "image_front_url",
-            )
+                if attempt < self.max_retries:
 
-            print(
-                "Bild:",
-                image_url,
-            )
+                    time.sleep(
+                        self.retry_delay,
+                    )
 
-            return image_url
-
-        except Exception as error:
-
-            print(
-                "Fehler:",
-                error,
-            )
-
-            return None
+        return None

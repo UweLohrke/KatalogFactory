@@ -1,0 +1,20 @@
+KatalogFactory
+Version: 1.0.0
+Codename: Amanda
+Status: Release Candidate
+
+Stand:
+
+✓ Excel-Import
+✓ Regionenerkennung
+✓ Bildverwaltung
+✓ PDF-Erstellung
+✓ Barcode-Erstellung
+✓ Einstellungen speichern
+✓ macOS-App (PyInstaller)
+
+Projektstart:
+Januar 2026
+
+Entwickler:
+Uwe Lohrke

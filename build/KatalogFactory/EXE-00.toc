@@ -57,7 +57,7 @@
  [],
  False,
  False,
- 1784661135,
+ 1785100762,
  [('runw',
    '/Users/mac/KatalogFactory/.venv/lib/python3.14/site-packages/PyInstaller/bootloader/Darwin-64bit/runw',
    'EXECUTABLE')],

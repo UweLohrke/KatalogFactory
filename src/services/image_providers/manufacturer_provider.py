@@ -5,7 +5,7 @@ Datei:
 manufacturer_provider.py
 
 Version:
-1.2.0
+1.3.0
 
 Beschreibung:
 Bildprovider für Herstellerbilder.
@@ -35,10 +35,27 @@ class ManufacturerProvider(BaseProvider):
         artikel=None,
     ):
         """
-        Zurzeit noch keine Suche.
+        Vorbereitungsstufe für die Herstellersuche.
 
-        Rückgabe:
-            None
+        Momentan werden lediglich
+        Informationen ausgegeben.
+        Die eigentliche Suche folgt
+        im nächsten Sprint.
         """
+
+        print(
+            f"[HERSTELLER] GTIN: {gtin}"
+        )
+
+        if artikel is not None:
+
+            artikelname = artikel.get(
+                "Artikel",
+                "Unbekannt",
+            )
+
+            print(
+                f"[HERSTELLER] Artikel: {artikelname}"
+            )
 
         return None

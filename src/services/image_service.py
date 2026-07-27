@@ -5,7 +5,7 @@ Datei:
 image_service.py
 
 Version:
-1.1.2
+1.1.3
 
 Beschreibung:
 Verwaltet Produktbilder.
@@ -16,9 +16,10 @@ Aufgaben:
 - Bilder aktualisieren
 """
 
-from pathlib import Path
+from config.app_config import IMAGE_FOLDER
 
 import requests
+import time
 
 from services.image_providers.provider_manager import (
     ProviderManager,
@@ -29,11 +30,10 @@ class ImageService:
 
     def __init__(self):
 
-        project_path = Path(__file__).resolve().parents[2]
-
-        self.image_folder = project_path / "bilder"
+        self.image_folder = IMAGE_FOLDER
 
         self.image_folder.mkdir(
+            parents=True,
             exist_ok=True,
         )
 
@@ -43,15 +43,10 @@ class ImageService:
     # Bildpfad ermitteln
     # --------------------------------------------------
 
-           # --------------------------------------------------
-    # Bildpfad ermitteln
-    # --------------------------------------------------
-
     def get_image_path(
         self,
         gtin,
     ):
-
 
         gtin = str(gtin).strip()
 
@@ -90,6 +85,10 @@ class ImageService:
     # Einzelnes Bild herunterladen
     # --------------------------------------------------
 
+        # --------------------------------------------------
+    # Einzelnes Bild herunterladen
+    # --------------------------------------------------
+
     def download_image(
         self,
         gtin,
@@ -97,7 +96,7 @@ class ImageService:
 
         image_url = self.provider_manager.get_image_url(
             gtin,
-    )
+        )
 
         if image_url is None:
 
@@ -108,26 +107,41 @@ class ImageService:
             f"{gtin}.jpg"
         )
 
-        try:
+        max_retries = 3
+        retry_delay = 2
 
-            response = requests.get(
-                image_url,
-                timeout=20,
-            )
+        for attempt in range(1, max_retries + 1):
 
-            if response.status_code != 200:
+            try:
 
-                return None
+                response = requests.get(
+                    image_url,
+                    timeout=20,
+                )
 
-            image_path.write_bytes(
-                response.content,
-            )
+                if response.status_code == 200:
 
-            return image_path
+                    image_path.write_bytes(
+                        response.content,
+                    )
 
-        except Exception:
+                    return image_path
 
-            return None
+                print(
+                    f"[DOWNLOAD] Versuch {attempt}: HTTP {response.status_code}"
+                )
+
+            except requests.RequestException as error:
+
+                print(
+                    f"[DOWNLOAD] Versuch {attempt}: {error}"
+                )
+
+            if attempt < max_retries:
+
+                time.sleep(retry_delay)
+
+        return None
 
     # --------------------------------------------------
     # Bild aus lokalem Cache liefern
@@ -209,6 +223,8 @@ class ImageService:
             else:
 
                 downloaded += 1
+
+            time.sleep(2)
 
         print()
 
