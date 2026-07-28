@@ -5,7 +5,7 @@ Datei:
 manufacturer_provider.py
 
 Version:
-1.4.0
+1.5.0
 
 Beschreibung:
 Bildprovider für Herstellerbilder.
@@ -13,8 +13,9 @@ Bildprovider für Herstellerbilder.
 Diese Klasse sucht Produktbilder
 direkt beim Hersteller.
 
-Die eigentliche Suchlogik wird
-schrittweise erweitert.
+Vor der Suche wird der Herstellername
+über die Alias-Tabelle auf eine
+einheitliche Schreibweise normalisiert.
 """
 
 from services.image_providers.base_provider import (
@@ -23,6 +24,10 @@ from services.image_providers.base_provider import (
 
 from config.manufacturers import (
     MANUFACTURERS,
+)
+
+from config.manufacturer_aliases import (
+    MANUFACTURER_ALIASES,
 )
 
 
@@ -50,10 +55,19 @@ class ManufacturerProvider(BaseProvider):
                 "Unbekannt",
             )
 
-            hersteller = artikel.get(
-                "Zusatztext",
-                "",
-            ).strip().upper()
+            hersteller = (
+                artikel.get(
+                    "Zusatztext",
+                    "",
+                )
+                .strip()
+                .upper()
+            )
+
+            hersteller = MANUFACTURER_ALIASES.get(
+                hersteller,
+                hersteller,
+            )
 
             print(
                 f"[HERSTELLER] Artikel: {artikelname}"
