@@ -5,29 +5,23 @@ Datei:
 manufacturer_provider.py
 
 Version:
-1.5.0
+1.7.0
 
 Beschreibung:
 Bildprovider für Herstellerbilder.
 
-Diese Klasse sucht Produktbilder
-direkt beim Hersteller.
-
-Vor der Suche wird der Herstellername
-über die Alias-Tabelle auf eine
-einheitliche Schreibweise normalisiert.
+Verwendet den ManufacturerService
+als zentrale Schnittstelle und sammelt
+unbekannte Hersteller für die spätere
+Bearbeitung.
 """
 
-from services.image_providers.base_provider import (
-    BaseProvider,
-)
+from services.image_providers.base_provider import BaseProvider
 
-from config.manufacturers import (
-    MANUFACTURERS,
-)
+from services.manufacturer_service import ManufacturerService
 
-from config.manufacturer_aliases import (
-    MANUFACTURER_ALIASES,
+from services.unknown_manufacturer_service import (
+    UnknownManufacturerService,
 )
 
 
@@ -35,7 +29,6 @@ class ManufacturerProvider(BaseProvider):
 
     @property
     def name(self):
-
         return "Hersteller"
 
     def get_image_url(
@@ -44,53 +37,46 @@ class ManufacturerProvider(BaseProvider):
         artikel=None,
     ):
 
-        print(
-            f"[HERSTELLER] GTIN: {gtin}"
+        print(f"[HERSTELLER] GTIN: {gtin}")
+
+        if artikel is None:
+            return None
+
+        artikelname = artikel.get(
+            "Artikel",
+            "Unbekannt",
         )
 
-        if artikel is not None:
+        hersteller = artikel.get(
+            "Zusatztext",
+            "",
+        )
 
-            artikelname = artikel.get(
-                "Artikel",
-                "Unbekannt",
-            )
+        hersteller = ManufacturerService.normalize(
+            hersteller
+        )
 
-            hersteller = (
-                artikel.get(
-                    "Zusatztext",
-                    "",
-                )
-                .strip()
-                .upper()
-            )
+        print(f"[HERSTELLER] Artikel: {artikelname}")
+        print(f"[HERSTELLER] Hersteller: {hersteller}")
 
-            hersteller = MANUFACTURER_ALIASES.get(
-                hersteller,
-                hersteller,
-            )
+        daten = ManufacturerService.get(
+            hersteller
+        )
+
+        if daten:
 
             print(
-                f"[HERSTELLER] Artikel: {artikelname}"
+                f"[HERSTELLER] Website: {daten['website']}"
             )
 
-            print(
-                f"[HERSTELLER] Hersteller: {hersteller}"
-            )
+        else:
 
-            daten = MANUFACTURERS.get(
+            UnknownManufacturerService.add(
                 hersteller
             )
 
-            if daten:
-
-                print(
-                    f"[HERSTELLER] Website: {daten['website']}"
-                )
-
-            else:
-
-                print(
-                    "[HERSTELLER] Hersteller nicht in Datenbank."
-                )
+            print(
+                "[HERSTELLER] Hersteller nicht in Datenbank."
+            )
 
         return None
