@@ -5,7 +5,7 @@ Datei:
 manufacturer_provider.py
 
 Version:
-1.3.0
+1.3.1
 
 Beschreibung:
 Bildprovider für Herstellerbilder.
@@ -54,8 +54,17 @@ class ManufacturerProvider(BaseProvider):
                 "Unbekannt",
             )
 
+            hersteller = artikel.get(
+                "Zusatztext",
+                "Unbekannt",
+            )
+
             print(
                 f"[HERSTELLER] Artikel: {artikelname}"
+            )
+
+            print(
+                f"[HERSTELLER] Hersteller: {hersteller}"
             )
 
         return None
