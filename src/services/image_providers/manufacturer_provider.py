@@ -5,7 +5,7 @@ Datei:
 manufacturer_provider.py
 
 Version:
-1.3.1
+1.4.0
 
 Beschreibung:
 Bildprovider für Herstellerbilder.
@@ -21,6 +21,10 @@ from services.image_providers.base_provider import (
     BaseProvider,
 )
 
+from config.manufacturers import (
+    MANUFACTURERS,
+)
+
 
 class ManufacturerProvider(BaseProvider):
 
@@ -34,14 +38,6 @@ class ManufacturerProvider(BaseProvider):
         gtin,
         artikel=None,
     ):
-        """
-        Vorbereitungsstufe für die Herstellersuche.
-
-        Momentan werden lediglich
-        Informationen ausgegeben.
-        Die eigentliche Suche folgt
-        im nächsten Sprint.
-        """
 
         print(
             f"[HERSTELLER] GTIN: {gtin}"
@@ -56,8 +52,8 @@ class ManufacturerProvider(BaseProvider):
 
             hersteller = artikel.get(
                 "Zusatztext",
-                "Unbekannt",
-            )
+                "",
+            ).strip().upper()
 
             print(
                 f"[HERSTELLER] Artikel: {artikelname}"
@@ -66,5 +62,21 @@ class ManufacturerProvider(BaseProvider):
             print(
                 f"[HERSTELLER] Hersteller: {hersteller}"
             )
+
+            daten = MANUFACTURERS.get(
+                hersteller
+            )
+
+            if daten:
+
+                print(
+                    f"[HERSTELLER] Website: {daten['website']}"
+                )
+
+            else:
+
+                print(
+                    "[HERSTELLER] Hersteller nicht in Datenbank."
+                )
 
         return None
