@@ -5,11 +5,20 @@ Datei:
 app_settings.py
 
 Version:
-1.0.0
+1.1.0
 
 Beschreibung:
 Zentrale Verwaltung aller Programmeinstellungen.
+
+Verwendet beim ersten Start automatisch
+die Standardordner aus der zentralen
+Konfiguration.
 """
+
+from config.app_config import (
+    EXCEL_FOLDER,
+    CATALOG_FOLDER,
+)
 
 from PySide6.QtCore import QSettings
 
@@ -56,7 +65,7 @@ class AppSettings:
 
         return self.settings.value(
             "last_excel_folder",
-            "",
+            str(EXCEL_FOLDER),
             type=str,
         )
 
@@ -78,7 +87,7 @@ class AppSettings:
 
         return self.settings.value(
             "last_output_folder",
-            "",
+            str(CATALOG_FOLDER),
             type=str,
         )
 
