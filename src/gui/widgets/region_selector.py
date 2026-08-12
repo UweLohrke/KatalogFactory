@@ -5,13 +5,17 @@ Datei:
 region_selector.py
 
 Version:
-0.8.5
+0.9.0
 
 Beschreibung:
 Widget zur Auswahl einer Region.
-Die verfügbaren Regionen werden über
-den CatalogService geladen.
+
+Die Regionen werden erst geladen,
+wenn der Benutzer eine Excel-Datei
+ausgewählt hat.
 """
+
+from pathlib import Path
 
 from PySide6.QtWidgets import (
     QLabel,
@@ -28,6 +32,7 @@ class RegionSelector(QWidget):
         super().__init__()
 
         self.catalog_service = catalog_service
+        self.excel_file = None
 
         self.create_ui()
 
@@ -60,11 +65,28 @@ class RegionSelector(QWidget):
 
         self.region_combo = QComboBox()
 
-        self.load_regions()
+        self.region_combo.setEnabled(
+            False,
+        )
 
         layout.addWidget(
             self.region_combo,
         )
+
+    # --------------------------------------------------
+    # Excel-Datei setzen
+    # --------------------------------------------------
+
+    def set_excel_file(
+        self,
+        excel_file,
+    ):
+
+        self.excel_file = Path(
+            excel_file,
+        )
+
+        self.load_regions()
 
     # --------------------------------------------------
     # Regionen laden
@@ -72,10 +94,26 @@ class RegionSelector(QWidget):
 
     def load_regions(self):
 
-        regionen = self.catalog_service.get_regions()
+        self.region_combo.clear()
+
+        if self.excel_file is None:
+
+            self.region_combo.setEnabled(
+                False,
+            )
+
+            return
+
+        regionen = self.catalog_service.get_regions(
+            excel_file=self.excel_file,
+        )
 
         self.region_combo.addItems(
             regionen,
+        )
+
+        self.region_combo.setEnabled(
+            bool(regionen),
         )
 
     # --------------------------------------------------

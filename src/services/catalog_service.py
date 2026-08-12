@@ -5,7 +5,7 @@ Datei:
 catalog_service.py
 
 Version:
-1.1.1
+1.2.0
 
 Beschreibung:
 Steuert den kompletten Ablauf der Katalogerstellung.
@@ -33,9 +33,14 @@ class CatalogService:
     # Regionen
     # --------------------------------------------------
 
-    def get_regions(self):
+    def get_regions(
+        self,
+        excel_file=None,
+    ):
 
-        return self.importer.get_regions()
+        return self.importer.get_regions(
+            excel_file=excel_file,
+        )
 
     # --------------------------------------------------
     # Katalog erstellen
@@ -62,16 +67,23 @@ class CatalogService:
             Zielordner für den PDF-Katalog.
         """
 
-        excel_file = Path(excel_file)
-        output_folder = Path(output_folder)
+        excel_file = Path(
+            excel_file,
+        )
+
+        output_folder = Path(
+            output_folder,
+        )
 
         # Excel laden
+
         dataframe = self.importer.get_articles_for_region(
             region,
             excel_file=excel_file,
         )
 
         # Hersteller gruppieren
+
         katalog = self.builder.build(
             dataframe,
         )

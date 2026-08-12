@@ -5,20 +5,19 @@ from PyInstaller.utils.hooks import (
     collect_data_files,
 )
 
-hiddenimports = collect_submodules("reportlab.graphics.barcode")
+hiddenimports = collect_submodules(
+    "reportlab.graphics.barcode"
+)
 
 datas = []
 
-datas += collect_data_files("reportlab")
+datas += collect_data_files(
+    "reportlab"
+)
 
 datas += [
     ("assets", "assets"),
-    ("bilder", "bilder"),
-    ("config", "config"),
-    ("database", "database"),
-    ("excel", "excel"),
 ]
-
 
 a = Analysis(
     ["src/app.py"],
@@ -34,7 +33,9 @@ a = Analysis(
     optimize=0,
 )
 
-pyz = PYZ(a.pure)
+pyz = PYZ(
+    a.pure
+)
 
 exe = EXE(
     pyz,

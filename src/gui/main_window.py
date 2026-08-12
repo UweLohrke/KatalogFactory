@@ -5,7 +5,7 @@ Datei:
 main_window.py
 
 Version:
-1.0.0
+1.1.1
 
 Beschreibung:
 Hauptfenster der KatalogFactory.
@@ -57,15 +57,18 @@ class MainWindow(QMainWindow):
         # Fenster-Icon
         # --------------------------------------------------
 
-        project_path = Path(__file__).resolve().parents[2]
+        project_path = Path(
+            __file__
+        ).resolve().parents[2]
 
         icon = project_path / "assets" / "icon.png"
 
         if icon.exists():
-            
 
             self.setWindowIcon(
-                QIcon(str(icon))
+                QIcon(
+                    str(icon)
+                )
             )
 
         self.setWindowTitle(
@@ -164,7 +167,51 @@ class MainWindow(QMainWindow):
         self.setStatusBar(
             self.status_bar,
         )
-            # --------------------------------------------------
+
+        # --------------------------------------------------
+        # Excel-Datei wurde ausgewählt
+        # --------------------------------------------------
+
+        self.file_selector.file_path.textChanged.connect(
+            self.excel_file_changed,
+        )
+
+        # --------------------------------------------------
+        # Bereits gespeicherte Excel-Datei laden
+        # --------------------------------------------------
+
+        current_excel_file = (
+            self.file_selector.get_file_path()
+        )
+
+        if current_excel_file:
+
+            self.excel_file_changed(
+                current_excel_file,
+            )
+
+    # --------------------------------------------------
+    # Excel-Datei geändert
+    # --------------------------------------------------
+
+    def excel_file_changed(
+        self,
+        excel_file,
+    ):
+
+        if not excel_file:
+
+            self.region_selector.set_excel_file(
+                None,
+            )
+
+            return
+
+        self.region_selector.set_excel_file(
+            excel_file,
+        )
+
+    # --------------------------------------------------
     # Katalog erstellen
     # --------------------------------------------------
 
@@ -182,6 +229,16 @@ class MainWindow(QMainWindow):
                 self,
                 "Fehler",
                 "Bitte eine Excel-Datei auswählen.",
+            )
+
+            return
+
+        if not region:
+
+            QMessageBox.warning(
+                self,
+                "Fehler",
+                "Bitte eine Region auswählen.",
             )
 
             return
@@ -239,20 +296,28 @@ class MainWindow(QMainWindow):
             self.create_button.enable()
 
 
+# --------------------------------------------------
+# Anwendung starten
+# --------------------------------------------------
+
 def run():
 
     app = QApplication(
         sys.argv,
     )
 
-    project_path = Path(__file__).resolve().parents[2]
+    project_path = Path(
+        __file__
+    ).resolve().parents[2]
 
     icon = project_path / "assets" / "icon.png"
 
     if icon.exists():
 
         app.setWindowIcon(
-            QIcon(str(icon))
+            QIcon(
+                str(icon)
+            )
         )
 
     window = MainWindow()
@@ -260,5 +325,5 @@ def run():
     window.show()
 
     sys.exit(
-        app.exec(),
+        app.exec()
     )
