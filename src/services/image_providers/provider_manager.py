@@ -5,7 +5,7 @@ Datei:
 provider_manager.py
 
 Version:
-1.2.1
+1.3.0
 
 Beschreibung:
 Verwaltet alle Bildprovider.
@@ -13,10 +13,15 @@ Verwaltet alle Bildprovider.
 Die Provider werden in einer
 festen Reihenfolge abgefragt,
 bis ein Bild gefunden wurde.
+
+Reihenfolge:
+
+1. Ecoinform
+2. Open Food Facts
 """
 
-from services.image_providers.manufacturer_provider import (
-    ManufacturerProvider,
+from services.image_providers.ecoinform_provider import (
+    EcoinformProvider,
 )
 
 from services.image_providers.open_food_facts_provider import (
@@ -30,7 +35,7 @@ class ProviderManager:
 
         self.providers = [
 
-            ManufacturerProvider(),
+            EcoinformProvider(),
 
             OpenFoodFactsProvider(),
 
