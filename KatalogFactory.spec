@@ -17,6 +17,7 @@ datas += collect_data_files(
 
 datas += [
     ("assets", "assets"),
+    ("src/resources", "resources"),
 ]
 
 a = Analysis(

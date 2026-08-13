@@ -5,15 +5,23 @@ Datei:
 image_loader.py
 
 Version:
-1.1.0
+1.2.0
 
 Beschreibung:
 Lädt Produktbilder über den ImageService
 und stellt Hilfsfunktionen für die
 Bilddarstellung bereit.
+
+Wenn kein Ecoinform-Bild vorhanden ist,
+wird der zentrale Produktbild-Platzhalter
+verwendet.
 """
 
 from PIL import Image
+
+from config.app_config import (
+    PLACEHOLDER_IMAGE,
+)
 
 from services.image_service import (
     ImageService,
@@ -39,9 +47,30 @@ class ImageLoader:
             artikel["EH GTIN"]
         ).strip()
 
-        return self.image_service.get_image(
-            gtin,
+        image_path = (
+            self.image_service.get_image(
+                gtin,
+            )
         )
+
+        if image_path is not None:
+
+            return image_path
+
+        # --------------------------------------------------
+        # Kein Ecoinform-Bild vorhanden
+        # --------------------------------------------------
+
+        print(
+            f"[BILD] Kein Ecoinform-Bild: {gtin}"
+        )
+
+        print(
+            f"[BILD] Verwende Platzhalter: "
+            f"{PLACEHOLDER_IMAGE}"
+        )
+
+        return PLACEHOLDER_IMAGE
 
     # --------------------------------------------------
     # Bild vorhanden?
@@ -52,9 +81,13 @@ class ImageLoader:
         artikel,
     ):
 
+        gtin = str(
+            artikel["EH GTIN"]
+        ).strip()
+
         return (
-            self.get_image(
-                artikel,
+            self.image_service.get_image(
+                gtin,
             )
             is not None
         )
@@ -99,9 +132,13 @@ class ImageLoader:
             frame_height / image_height,
         )
 
-        draw_width = image_width * scale
+        draw_width = (
+            image_width * scale
+        )
 
-        draw_height = image_height * scale
+        draw_height = (
+            image_height * scale
+        )
 
         offset_x = (
             frame_width - draw_width
